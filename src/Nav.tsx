@@ -34,7 +34,8 @@ export class Nav extends Component<{active:"ammo"|"weapons"|"armor"|"items"|"abo
             <div className='version-language'>
                 <div className='left'>
                     <div>{eft_version}</div>
-                    <Link to='/about' className='about-link'>About</Link>
+                    <div><Link to='/about' className='about-link'>{_("About")}</Link></div>
+                    <div><a href="https://github.com/tarkovarmory/tarkovarmory" className='github-link'>github</a></div>
                 </div>
                 <span className='right'>
                     <span className='translate-icon' />

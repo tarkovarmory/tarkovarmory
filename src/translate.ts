@@ -23,6 +23,7 @@ interface TranslationStrings {
     "Well Placed Shots to Kill": string;
     "These values represent the number of well placed shots to the thorax or head.": string;
     "In practice, your values will likely be higher unless you are standing directly infront of an unmoving target :)": string;
+    "About"               : string;
 }
 
 let ru:TranslationStrings = {
@@ -51,6 +52,7 @@ let ru:TranslationStrings = {
         "Эти значения представляют собой количество успешных попаданий в грудную клетку или голову.",
     "In practice, your values will likely be higher unless you are standing directly infront of an unmoving target :)":
         "Учтите, что на практике вам наверняка потребуется больше выстрелов, кроме случаев, когда цель находится прямо перед вами и совершенно неподвижна (;",
+    "About": "Относительно",
 }
 
 let de:TranslationStrings = {
@@ -79,6 +81,7 @@ let de:TranslationStrings = {
         "Diese Werte geben die Anzahl der gut platzierten Schüsse auf den Thorax oder den Kopf an.",
     "In practice, your values will likely be higher unless you are standing directly infront of an unmoving target :)":
         "In der Praxis sind Ihre Werte wahrscheinlich höher, wenn Sie sich nicht direkt vor einem sich bewegenden Ziel befinden :)",
+    "About": "Omtrent",
 }
 
 let languages = {
