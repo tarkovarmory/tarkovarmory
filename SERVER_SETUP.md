@@ -1,4 +1,10 @@
-# Server setup
+# NOTE: You don't need this, these are my production release notes
+
+If you just want to hack on the source code refer to the [README](./README.md)
+which has simple development environment instructions.
+
+
+## Server setup
 
 Ubuntu 18.10
 
