@@ -1,4 +1,5 @@
 This license applies to the Bender font files by Jovanny Lemonad
+This font is freely available from http://jovanny.ru/
 
 
 ============================================================================
