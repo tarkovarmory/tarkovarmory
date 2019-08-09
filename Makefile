@@ -10,10 +10,10 @@ tmux: node_modules
 
 precompute: src/precomputed.ts
 
-src/precomputed.ts: src/precompute.ts data/generated.ts src/simulations.ts
+src/precomputed.ts: src/precompute.ts data/generated.ts src/simulations.ts dist/precompute.js
 	node dist/precompute.js
 
-dist/precompute.js:
+dist/precompute.js: dist 
 	mkdir -p dist
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) PRODUCTION=true webpack --devtool=source-map --config webpack-server.config.js
 
@@ -75,7 +75,9 @@ assets:
 clean:
 	rm -Rf tarkov-armory
 	rm -Rf dist
-	mkdir -p dist
 	rm tarkov-armory.tar.gz
+
+dist:
+	mkdir -p dist
 
 .PHONY: pack clean assets client server tmux
