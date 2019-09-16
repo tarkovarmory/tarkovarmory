@@ -1,9 +1,10 @@
 import React from 'inferno-compat'; import ReactDOM from 'inferno-compat';
 import { _ } from "translate"; import { Component } from "inferno";
 import { well_known_ids } from './generated';
-import { Item, items, caliber_to_type, id2slug, slug2item } from './data';
-import { get_search1, update_search1 } from './search';
+import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
+import { get_search_all1, get_search1, update_search1 } from './search';
 import { dup } from './util';
+
 
 const weapons = items.filter(item => item.isDescendentOf(well_known_ids['weapon']) && item.children.length === 0)
 const weapon_types = items.filter(item => item.isDescendentOf(well_known_ids['weapon']) && item.children.length > 0)
@@ -19,7 +20,7 @@ const attributes = [
 ];
 
 const all_attributes = [
-    ['Weight', 'Weight', 'How much the gun weighs',],
+    ['Weight', 'Weight'],
     ['Accuracy', 'Accuracy Mod.'],
     ['CenterOfImpact', 'Accuracy'],
     ['Ergonomics', 'Ergonomics'],
@@ -115,11 +116,12 @@ export class Weapons extends Component<{}, any> {
 
     public render() {
         let item = slug2item[this.state.selected] || weapons[0];
+        let slot_map = get_search_all1();
         let computed = {};
         all_attributes.map((attr, idx) => {
             computed[attr[0]] = item[attr[0]] || 0;
         });
-        calculate_attributes("W", item, computed);
+        item.calculate_attributes("W", slot_map, computed);
 
         computed['RecoilForceUp']   += computed['RecoilForceUp'] * computed['Recoil'] * 0.01
         computed['RecoilForceBack'] += computed['RecoilForceBack'] * computed['Recoil'] * 0.01
@@ -127,8 +129,7 @@ export class Weapons extends Component<{}, any> {
         computed['RecoilForceUp']   = Math.round(computed['RecoilForceUp'])
         computed['RecoilForceBack'] = Math.round(computed['RecoilForceBack'])
 
-        let conflicts = {};
-        calculate_conflicts("W", item, conflicts);
+        let conflicts = item.calculate_conflict_map("W", slot_map);
 
         return (
         <div id='Weapons'>
@@ -171,7 +172,7 @@ export class Weapons extends Component<{}, any> {
                         </tr>
                     </thead>
                     <tbody>
-                        {render_slots(0, "W", item, [], conflicts)}
+                        {render_slots(0, "W", item, conflicts, [])}
                     </tbody>
                 </table>
             </div>
@@ -232,9 +233,9 @@ function make_indents(indents:number) {
     return ret;
 }
 
-function render_slots(indent:number, prefix:string, item:Item, out:Array<any>, conflicts:any) {
+function render_slots(indent:number, prefix:string, item:Item, conflicts:ConflictMap, rendered_rows:Array<any>):Array<any> {
     if (!item.slots || Object.keys(item.slots).length === 0) {
-        return out;
+        return rendered_rows;
     }
 
     for (let slot_name in item.slots) {
@@ -242,7 +243,7 @@ function render_slots(indent:number, prefix:string, item:Item, out:Array<any>, c
         let val = get_search1(key, (item.slots[slot_name].required ? id2slug[item.slots[slot_name].filter[0]] : ""));
         let sel = val.length > 0 ? slug2item[val] : null;
 
-        out.push(
+        rendered_rows.push(
             <tr key={key}>
                 <td>
                     {make_indents(indent)}
@@ -269,73 +270,12 @@ function render_slots(indent:number, prefix:string, item:Item, out:Array<any>, c
         );
 
         if (sel) {
-            render_slots(indent+1, key, sel, out, conflicts);
+            render_slots(indent+1, key, sel, conflicts, rendered_rows);
         }
     }
 
-    return out;
+    return rendered_rows;
 }
 
-function calculate_attributes(prefix:string, item:Item, out:any) {
-    if (!item.slots || Object.keys(item.slots).length === 0) {
-        return;
-    }
-
-
-    for (let slot_name in item.slots) {
-        let key = prefix + "." + slot_name;
-        let val = get_search1(key, (item.slots[slot_name].required ? id2slug[item.slots[slot_name].filter[0]] : ""));
-        let sel = val.length > 0 ? slug2item[val] : null;
-
-        if (sel) {
-            for (let k in out) {
-                if (k in sel) {
-                    switch(k) {
-                        case 'CenterOfImpact':
-                            out[k] = sel[k];
-                            break;
-
-                        case 'SightingRange':
-                            out[k] = Math.max(sel[k], out[k]);
-                            break;
-
-                        default:
-                            out[k] += sel[k];
-                            break;
-                    }
-
-                }
-            }
-
-            calculate_attributes(key, sel, out);
-        }
-    }
-
-    return out;
-}
-
-function calculate_conflicts(prefix:string, item:Item, out:any) {
-    if (item.conflicting_items) {
-        for (let id of item.conflicting_items) {
-            out[id] = id;
-        }
-    }
-
-    if (!item.slots || Object.keys(item.slots).length === 0) {
-        return;
-    }
-
-    for (let slot_name in item.slots) {
-        let key = prefix + "." + slot_name;
-        let val = get_search1(key, (item.slots[slot_name].required ? id2slug[item.slots[slot_name].filter[0]] : ""));
-        let sel = val.length > 0 ? slug2item[val] : null;
-
-        if (sel) {
-            calculate_conflicts(key, sel, out);
-        }
-    }
-
-    return out;
-}
 
 export default Weapons;

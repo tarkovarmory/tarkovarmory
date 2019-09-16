@@ -50,6 +50,18 @@ export function get_search_all():{[name:string]: Array<string>} {
     }
     return server_search;
 }
+export function get_search_all1():{[name:string]: string} {
+    let search_all = get_search_all();
+    let ret:{[name:string]: string} = {};
+
+    for (let k in search_all) {
+        if (search_all[k].length > 0) {
+            ret[k] = search_all[k][0];
+        }
+    }
+
+    return ret;
+}
 export function get_search(name:string, _default:Array<string> = []):Array<string> {
     let S = get_search_all();
     if (name in S) {

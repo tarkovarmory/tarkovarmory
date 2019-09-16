@@ -114,15 +114,15 @@ export class Ammunition extends Component<{}, any> {
             case 'fragmentation_chance' : lst.sort(sorter(x=>-x.fragmentation_chance)); break;
             case 'speed'                : lst.sort(sorter(x=>-x.speed)); break;
             case 'ricochet_chance'      : lst.sort(sorter(x=>-x.ricochet_chance)); break;
-            case 'armor1_min'           : lst.sort(sorter(x=>shots_to_kill(x, armor1).min)); break;
-            case 'armor1_avg'           : lst.sort(sorter(x=>shots_to_kill(x, armor1).avg)); break;
-            case 'armor1_max'           : lst.sort(sorter(x=>shots_to_kill(x, armor1).max)); break;
-            case 'armor2_min'           : lst.sort(sorter(x=>shots_to_kill(x, armor2).min)); break;
-            case 'armor2_avg'           : lst.sort(sorter(x=>shots_to_kill(x, armor2).avg)); break;
-            case 'armor2_max'           : lst.sort(sorter(x=>shots_to_kill(x, armor2).max)); break;
-            case 'armor3_min'           : lst.sort(sorter(x=>shots_to_kill(x, armor3).min)); break;
-            case 'armor3_avg'           : lst.sort(sorter(x=>shots_to_kill(x, armor3).avg)); break;
-            case 'armor3_max'           : lst.sort(sorter(x=>shots_to_kill(x, armor3).max)); break;
+            case 'armor1_min'           : lst.sort(sorter(x=>shots_to_kill(x, [armor1]).min)); break;
+            case 'armor1_avg'           : lst.sort(sorter(x=>shots_to_kill(x, [armor1]).avg)); break;
+            case 'armor1_max'           : lst.sort(sorter(x=>shots_to_kill(x, [armor1]).max)); break;
+            case 'armor2_min'           : lst.sort(sorter(x=>shots_to_kill(x, [armor2]).min)); break;
+            case 'armor2_avg'           : lst.sort(sorter(x=>shots_to_kill(x, [armor2]).avg)); break;
+            case 'armor2_max'           : lst.sort(sorter(x=>shots_to_kill(x, [armor2]).max)); break;
+            case 'armor3_min'           : lst.sort(sorter(x=>shots_to_kill(x, [armor3]).min)); break;
+            case 'armor3_avg'           : lst.sort(sorter(x=>shots_to_kill(x, [armor3]).avg)); break;
+            case 'armor3_max'           : lst.sort(sorter(x=>shots_to_kill(x, [armor3]).max)); break;
             default:
                 console.error("Invalid sort: ", sort)
         }
@@ -234,9 +234,9 @@ export class Ammunition extends Component<{}, any> {
                                 }
 
 
-                                let stk1 = shots_to_kill(ammo, armor1);
-                                let stk2 = shots_to_kill(ammo, armor2);
-                                let stk3 = shots_to_kill(ammo, armor3);
+                                let stk1 = shots_to_kill(ammo, [armor1]);
+                                let stk2 = shots_to_kill(ammo, [armor2]);
+                                let stk3 = shots_to_kill(ammo, [armor3]);
 
                                 return (
                                 <tr key={ammo.slug} className={odd ? 'odd' : 'even'}>

@@ -97,6 +97,7 @@ def extract_interesting_fields(item):
             'DeafStrength',
             'ArmorMaterial',
             'armorZone',
+            'headSegments',
             "TracerColor",
             "Caliber",
             "weapFireType",
@@ -104,7 +105,10 @@ def extract_interesting_fields(item):
 
             "BoltAction",
         ):
-            ret[field] = item['_props'][field]
+            if field == 'headSegments' and len(item['_props'][field]) == 0:
+                pass
+            else:
+                ret[field] = item['_props'][field]
 
         if field == 'Slots' and len(item['_props']['Slots']) > 0:
             ret['slots'] = {}
@@ -140,10 +144,16 @@ for hash in item_db:
     if item['_type'] == 'Node':
         if item['_name'] == 'Ammo':
             well_known_ids['ammo'] = id
-        if item['_name'] == 'Armor':
+        elif item['_name'] == 'Armor':
             well_known_ids['armor'] = id
-        if item['_name'] == 'Weapon':
+        elif item['_name'] == 'Weapon':
             well_known_ids['weapon'] = id
+        elif item['_name'] == 'Armor':
+            well_known_ids['armor'] = id
+        elif item['_name'] == 'Vest':
+            well_known_ids['vest'] = id
+        elif item['_name'] == 'Headwear':
+            well_known_ids['headwear'] = id
 
 
     items[id] = extract_interesting_fields(item)
@@ -160,9 +170,19 @@ for hash in item_db:
 
 
 NOARMOR=-1
+NOHELMET=-2
+NOVEST=-3
 tr['en'][NOARMOR]['name'] = 'No armor'
 tr['ru'][NOARMOR]['name'] = 'Нет брони'
 tr['de'][NOARMOR]['name'] = 'Keine Rüstung'
+
+tr['en'][NOHELMET]['name'] = 'No helmet'
+tr['ru'][NOHELMET]['name'] = 'Нет шлема'
+tr['de'][NOHELMET]['name'] = 'Kein helm'
+
+tr['en'][NOVEST]['name'] = 'No vest'
+tr['ru'][NOVEST]['name'] = 'Нет брони'
+tr['de'][NOVEST]['name'] = 'Keine Weste'
 
 
 
@@ -179,6 +199,7 @@ for fname in glob.glob("images/*.png"):
 
 print("Categories: %d" % len(nodes))
 print("Items: %d" % len(items))
+print("Well known ids: %s" % json.dumps(well_known_ids, indent=4))
 
 with open('generated.ts', 'w') as out:
     out.write('export const eft_version = \"%s\";\n' % eft_version())

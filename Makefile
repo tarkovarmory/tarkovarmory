@@ -13,7 +13,7 @@ precompute: src/precomputed.ts
 src/precomputed.ts: src/precompute.ts data/generated.ts src/simulations.ts dist/precompute.js
 	node dist/precompute.js
 
-dist/precompute.js: dist 
+dist/precompute.js:
 	mkdir -p dist
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) PRODUCTION=true webpack --devtool=source-map --config webpack-server.config.js
 
