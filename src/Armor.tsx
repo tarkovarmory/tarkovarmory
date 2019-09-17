@@ -1,7 +1,7 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { _ } from "translate";
-import { Component } from "inferno";
+import { Component } from "react";
 import { well_known_ids } from './generated';
 import { chance, dup } from './util';
 import { AmmoCaliber, AmmoCaliberValues, ammo_list, } from 'data';
@@ -17,7 +17,7 @@ function ArmorSelect(props:{list:Array<Armor>, value:string, onChange:(ev)=>any}
         <select value={props.value} onChange={props.onChange}>
             {[0,2,3,4,5,6].map((ac, idx) =>
                 props.list.filter(x => x.armor_class === ac).length === 0 ? null :
-                <optgroup label={_("Armor Class") + " - " + ac}>
+                <optgroup key={ac} label={_("Armor Class") + " - " + ac}>
                     {props.list.filter(x => x.armor_class === ac).map((armor, idx) =>
                         <option key={armor.slug} value={armor.slug}>{armor.name}</option>)}
                 </optgroup>

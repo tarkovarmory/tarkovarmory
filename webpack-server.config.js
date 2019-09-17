@@ -36,10 +36,12 @@ module.exports = {
             'node_modules'
         ],
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+        /*
         alias: {
 			'react': 'inferno-compat',
 			'react-dom': 'inferno-compat'
 		}
+        */
     },
     output: {
         path: __dirname + '/dist',
@@ -86,7 +88,9 @@ module.exports = {
     },
 };
 
+/*
 if (!production) {
     module.exports.resolve.alias.inferno = __dirname + "/node_modules/inferno/dist/index.dev.esm.js";
     module.exports.resolve.alias["inferno-server"] = __dirname + "/node_modules/inferno-server/dist/index.dev.esm.js";
 }
+*/

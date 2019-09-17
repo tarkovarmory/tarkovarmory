@@ -1,5 +1,5 @@
-import React from 'inferno-compat'; import ReactDOM from 'inferno-compat';
-import { _ } from "translate"; import { Component } from "inferno";
+import * as React from 'react'; import * as ReactDOM from 'react-dom';
+import { _ } from "translate"; import { Component } from "react";
 import { well_known_ids } from './generated';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
@@ -137,7 +137,7 @@ export class Weapons extends Component<{}, any> {
                 {weapon_types.map((wt, idx) => (
                     <optgroup key={idx} label={wt.long_name}>
                         {weapons.filter(item => item.parent.id === wt.id).map((item, idx) => (
-                            <option value={item.slug}>{item.name}</option>
+                            <option key={item.slug} value={item.slug}>{item.name}</option>
                         ))}
                     </optgroup>
                 ))}
@@ -145,7 +145,7 @@ export class Weapons extends Component<{}, any> {
 
             <div className='attributes'>
                 {all_attributes.map((attr, idx) => (
-                    <div className='calculated-attribute'>
+                    <div key={idx} className='calculated-attribute'>
                         <div className='name'>
                             {attr[1]}
                         </div>
@@ -257,12 +257,12 @@ function render_slots(indent:number, prefix:string, item:Item, conflicts:Conflic
                         {(!item.slots[slot_name].required || null) &&
                             <option value={""}>-- none --</option>}
                         {item.slots[slot_name].filter.map((id, idx) => (
-                            <option value={id2slug[id]} disabled={id in conflicts}>{items[id].long_name}</option>
+                            <option key={id} value={id2slug[id]} disabled={id in conflicts}>{items[id].long_name}</option>
                         ))}
                     </select>
                 </td>
                 {sel && attributes.map((v, idx) => (
-                    <td className='numeric'>
+                    <td key={idx} className='numeric'>
                         {beautify(v[0], sel[v[0]])}
                     </td>
                 ))}

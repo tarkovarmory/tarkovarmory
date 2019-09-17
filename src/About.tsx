@@ -1,5 +1,5 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import { _ } from "translate";
 

@@ -1,9 +1,9 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-import { Component } from "inferno";
-import { Router } from 'inferno-router';
-import { hydrate } from "inferno-hydrate";
+import { Component } from "react";
+import { Router } from 'react-router-dom';
+import { hydrate } from "react-dom";
 import { createBrowserHistory } from 'history';
 
 import { set_shots_to_kill_cache } from './simulations';

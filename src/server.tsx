@@ -1,9 +1,9 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import * as express from "express";
-import { renderToString } from "inferno-server";
-import { StaticRouter } from 'inferno-router';
+import { renderToString } from "react-dom/server";
+import { StaticRouter } from 'react-router';
 import path = require("path");
 import Main from "./Main";
 import { server_set_search } from './search';
@@ -92,7 +92,10 @@ server.get("*", (req, res) => {
        ${!production ? '<script async src="//' + req.hostname + ':35708/livereload.js"></script>' : ''}
    </head>`)
 
-    res.write(`<body><div id='root'>${renderToString(wrapper)}</div></body></html>`);
+    //res.write(`<body><div id='root'>${renderToString(wrapper)}</div></body></html>`);
+    res.write(`<body><div id='root'>`);
+    //res.write(renderToString(wrapper));
+    res.write(`</div></body></html>`);
 
     res.end();
 });

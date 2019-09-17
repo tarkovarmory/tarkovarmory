@@ -1,7 +1,7 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
-import { Component } from "inferno";
-import { Route, Link } from 'inferno-router';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { Component } from "react";
+import { Route, Link } from 'react-router-dom';
 import { _, get_interface_language, get_auto_language } from "translate";
 import { eft_version } from "./generated";
 import { update_search } from "./search";
@@ -50,7 +50,6 @@ export class Nav extends Component<{active:"ammo"|"weapons"|"armor"|"items"|"abo
             <nav id='Main-Nav'>
                 <Link className={this.props.active === "ammo" ? "active" : ""} to={"/ammo" + lang_suffix()}>{_("Ammo")}</Link>
                 <Link className={this.props.active === "weapons" ? "active" : ""} to={"/weapons" + lang_suffix()}>{_("Weapons")}</Link>
-                {/* <Link className={this.props.active === "items" ? "active" : ""} to={"/items" + lang_suffix()}>{_("Items")}</Link> */ }
                 <Link className={this.props.active === "armor" ? "active" : ""} to={"/armor" + lang_suffix()}>{_("Armor")}</Link>
             </nav>
         </div>

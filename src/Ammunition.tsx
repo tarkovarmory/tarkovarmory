@@ -1,9 +1,9 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { _ } from "translate";
-import { Component } from "inferno";
+import { Component } from "react";
 import { AmmoCaliber, AmmoCaliberValues, ammo_list, armor_list, armor_by_slug, armor_sort_ac_name } from 'data';
-import MultiSelect from './MultiSelect';
+import { MultiSelect, getMultiSelectValue, getMultiSelectState } from './MultiSelect';
 import { chance, dup } from './util';
 import { shots_to_kill } from 'simulations';
 import { get_search, update_search } from './search';
@@ -22,7 +22,7 @@ function ArmorSelect(props:{value:string, onChange:(ev)=>any}) {
     return (
         <select value={props.value} onChange={props.onChange}>
             {[0,2,3,4,5,6].map((ac, idx) =>
-                <optgroup label={_("Armor Class") + " - " + ac}>
+                <optgroup key={ac} label={_("Armor Class") + " - " + ac}>
                     {armor_list.filter(x => x.armor_class === ac).map((armor, idx) =>
                         <option key={armor.slug} value={armor.slug}>{armor.name}</option>)}
                 </optgroup>
@@ -53,7 +53,7 @@ export class Ammunition extends Component<{}, any> {
         super(props);
 
         this.state = {
-            "calibers_selected": MultiSelect.getValue("calibers"),
+            "calibers_selected": getMultiSelectValue("calibers"),
             "armor_selected": get_search("armor_selected", ["notHeavy", "item_equipment_armor_iotv_1", "item_equipment_armor_zhuk6a"]),
             "selected": "",
             "sort": get_search("sort", ["caliber"])[0],
@@ -155,7 +155,7 @@ export class Ammunition extends Component<{}, any> {
                                 }
 
                                 return (
-                                    <tr onClick={() => this.select(ammo.slug)} className={(this.state.selected === ammo.slug ? 'selected' : '') + (odd ? 'odd' : 'even')}>
+                                    <tr key={ammo.slug} onClick={() => this.select(ammo.slug)} className={(this.state.selected === ammo.slug ? 'selected' : '') + (odd ? 'odd' : 'even')}>
                                         <td><span title={ammo.long_name}>{ammo.name}</span></td>
                                     </tr>
                                 );

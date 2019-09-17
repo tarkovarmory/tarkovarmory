@@ -1,20 +1,20 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import { _ } from "translate";
-import { Component } from "inferno";
-import { Redirect, Route, Link } from 'inferno-router';
+import { Component } from "react";
+import { Redirect, Route, Link } from 'react-router-dom';
 import { ammo_list, armor_list, weapon_list } from 'data';
-import Nav from "./Nav";
+import { Nav } from "./Nav";
 import Ammunition from "./Ammunition";
 import Weapons from "./Weapons";
 import ArmorAnalyzer from "./Armor";
 import About from "./About";
 
-const _About       = () => (<div><Nav active='about' /><About /></div>);
-const _Ammunition = () => (<div><Nav active='ammo' /><Ammunition /></div>);
-const _Weapons    = () => (<div><Nav active='weapons' /><Weapons /></div>);
-const _Armor      = () => (<div><Nav active='armor' /><ArmorAnalyzer /></div>);
+function _About() { return <div><Nav active='about' /><About /></div>; }
+function _Ammunition() { return <div><Nav active='ammo' /><Ammunition /></div>; }
+function _Weapons() { return <div><Nav active='weapons' /><Weapons /></div>; }
+function _Armor() { return <div><Nav active='armor' /><ArmorAnalyzer /></div>; }
 
 export class Main extends Component<{}, {}> {
    constructor(props) {

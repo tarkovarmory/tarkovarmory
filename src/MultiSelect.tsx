@@ -1,7 +1,8 @@
-import React from 'inferno-compat';
-import ReactDOM from 'inferno-compat';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { useState, useEffect } from 'react';
 import { _ } from "translate";
-import { Component } from "inferno";
+import { Component } from "react";
 import { update_search, field_flags_to_array, array_to_field_flags, get_search } from './search';
 
 
@@ -16,43 +17,34 @@ interface MultiSelectProps {
 
 declare var browserHistory;
 
-
-export class MultiSelect extends Component<MultiSelectProps, any> {
-    constructor(props) {
-        super(props);
-        this.state = MultiSelect.getState(this.props.name, this.props.defaultSelected || []);
-    }
-
-    static getValue(name:string, _default:Array<string>=[]) {
-        return get_search(name, _default).join(",");
-    }
-    static getState(name:string, _default:Array<string>=[]) {
-        return array_to_field_flags(get_search(name, _default))
-    }
-
-    toggle(val:string):void {
-        let S = {};
-        S[val] = !this.state[val];
-        this.setState(S);
-        update_search(this.props.name, field_flags_to_array(this.state));
-        this.props.onChange(field_flags_to_array(this.state).join(","));
-    }
-
-    public render() {
-        return (
-            <div className='MultiSelect'>
-            {this.props.values.map((val, idx) =>
-                <span key={val}
-                    className={'MultiSelect-value' + (this.state[val] ? ' active': '')}
-                    onClick={() => this.toggle(val)} >
-                    {_(val as any)}
-                </span>
-            )}
-            </div>
-        );
-    }
+export function getMultiSelectValue(name:string, _default:Array<string>=[]) {
+    return get_search(name, _default).join(",");
+}
+export function getMultiSelectState(name:string, _default:Array<string>=[]) {
+    return array_to_field_flags(get_search(name, _default))
 }
 
+export function MultiSelect(props:MultiSelectProps) {
+    const [S, setS] = useState(getMultiSelectState(props.name, props.defaultSelected || []));
 
+    function toggle(val:string):void {
+        S[val] = !S[val];
+        setS(S);
+        update_search(props.name, field_flags_to_array(S));
+        props.onChange(field_flags_to_array(S).join(","));
+    }
+
+    return (
+        <div className='MultiSelect'>
+        {props.values.map((val, idx) =>
+            <span key={val}
+                className={'MultiSelect-value' + (S[val] ? ' active': '')}
+                onClick={() => toggle(val)} >
+                {_(val as any)}
+            </span>
+        )}
+        </div>
+    );
+}
 
 export default MultiSelect;

@@ -29,10 +29,12 @@ module.exports = {
             'node_modules'
         ],
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+        /*
         alias: {
 			'react': 'inferno-compat',
 			'react-dom': 'inferno-compat',
 		}
+        */
     },
     output: {
         path: __dirname + '/dist',
@@ -72,7 +74,9 @@ module.exports = {
     },
 };
 
+/*
 if (!production) {
     module.exports.resolve.alias.inferno = __dirname + "/node_modules/inferno/dist/index.dev.esm.js";
 }
+*/
 
