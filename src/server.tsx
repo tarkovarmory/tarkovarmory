@@ -78,24 +78,23 @@ server.get("*", (req, res) => {
     res.writeHead(200, {'Content-Type': 'text/html'});
 
     res.write(`<!doctype html><html lang="${lang}"><head>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-       <meta name="apple-mobile-web-app-capable" content="yes">
-       <meta name="format-detection" content="telephone=no">
-       <meta name="application-name" content="Tarkov Armory"/>
-       <meta http-equiv="last-modified" content="${mdate}">
-       <meta name="theme-color" content="#5A503C">
-       <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
-       <title>Tarkov Armory</title>
-       ${production ? google_analytics : ""}
-       <script defer src='./static/client.js?${hash}'></script>
-       <link rel="stylesheet" type="text/css" href="/static/tarkovarmory.css?${hash}">
-       ${!production ? '<script async src="//' + req.hostname + ':35708/livereload.js"></script>' : ''}
-   </head>`)
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<meta name="application-name" content="Tarkov Armory"/>
+<meta http-equiv="last-modified" content="${mdate}">
+<meta name="theme-color" content="#5A503C">
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+<title>Tarkov Armory</title>
+${production ? google_analytics : ""}
+<script defer src='./static/client.js?${hash}'></script>
+<link rel="stylesheet" type="text/css" href="/static/tarkovarmory.css?${hash}">
+${!production ? '<script async src="//' + req.hostname + ':35708/livereload.js"></script>' : ''}
+</head>`)
 
-    //res.write(`<body><div id='root'>${renderToString(wrapper)}</div></body></html>`);
-    res.write(`<body><div id='root'>`);
-    //res.write(renderToString(wrapper));
-    res.write(`</div></body></html>`);
+    res.write(`<body><div id='root'>${renderToString(wrapper)}</div></body></html>`);
 
     res.end();
 });
