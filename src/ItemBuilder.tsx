@@ -13,6 +13,7 @@ interface ItemBuilderProps {
     'options': Array<Item>;
     'attributes': Array<Array<string>>;
     'rootselector': (props:{options, value, onChange})=>JSX.Element;
+    'onChange': () => void;
 }
 
 
@@ -37,7 +38,7 @@ export function ItemBuilder(props:ItemBuilderProps):JSX.Element {
 }
 
 function ItemBuildRows(props:ItemBuilderProps):JSX.Element {
-    let [selected_slug, setSelectedSlug] = useState();
+    let [selected_slug, setSelectedSlug] = useState(get_search1(props.name, props.options[0].slug));
 
     let item = slug2item[selected_slug] || props.options[0];
     let computed = {};
@@ -46,10 +47,17 @@ function ItemBuildRows(props:ItemBuilderProps):JSX.Element {
     });
     item.calculate_attributes(props.name, get_search_all1(), computed);
 
+    function setSelected(e) {
+        let slug = e.target.value;
+        setSelectedSlug(slug);
+        update_search1(props.name, slug);
+        props.onChange();
+    }
+
     return (
         <tr key={props.name}>
             <td>
-                <props.rootselector options={props.options} value={selected_slug} onChange={(e) => setSelectedSlug(e.target.value)} />
+                <props.rootselector options={props.options} value={selected_slug} onChange={setSelected}/>
             </td>
 
             {props.attributes.map(arr => (

@@ -35,6 +35,7 @@ export class Item {
 
     /* we compute these */
     readonly armor_zones:{[zone:string]:boolean} = {};
+    readonly armor_zones_string:string;
     readonly resistance:number;
     readonly destructibility:number;
     readonly min_repair_degradation:number;
@@ -59,11 +60,11 @@ export class Item {
         this.ArmorMaterial = this.ArmorMaterial || null;
 
         this.armor_zones = extractArmorZones(raw);
+        this.armor_zones_string = Object.keys(this.armor_zones).join(' ');
         this.resistance = this.compute_resistance();
         this.destructibility = this.compute_destructibility();
         this.min_repair_degradation = this.compute_min_repair_degradation();
         this.max_repair_degradation = this.compute_max_repair_degradation();
-
     }
 
     get name():string {
@@ -165,7 +166,8 @@ export class Item {
         if (this.ArmorMaterial in config['armor_materials']) {
             return config['armor_materials'][this.ArmorMaterial]['Destructibility'];
         } else {
-            return -1000;
+            //return -1000;
+            return 0;
         }
     }
     private compute_min_repair_degradation():number {
