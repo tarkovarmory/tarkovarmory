@@ -1,6 +1,6 @@
 import { well_known_ids, tr, config } from 'generated';
 import { Ammo } from './Ammo';
-import { items } from './Items';
+import { Item, items } from './Items';
 import { item_name } from '../translate';
 
 export type ArmorZones = "thorax" | "stomach" | "arms" | "legs" | "eyes" | "jaws" | "ears" | "nape" | "top";
@@ -26,8 +26,8 @@ export function armor_by_slug(slug:string):Armor {
 }
 
 export function armor_sort_ac_name(a:Armor, b:Armor):number {
-    if (a.armor_class !== b.armor_class) {
-        return a.armor_class - b.armor_class;
+    if (a.armorClass !== b.armorClass) {
+        return a.armorClass - b.armorClass;
     }
     if (a.name < b.name) {
         return -1;
@@ -38,62 +38,69 @@ export function armor_sort_ac_name(a:Armor, b:Armor):number {
     return 0;
 }
 
-export class Armor {
-    public raw:any;
-    public id:number;
-    public slug:string;
-    public armor_class:number;
-    public blunt_throughput:number;
-    public durability:number;
-    public max_durability:number;
-    public material:string;
-    public armor_zones:{[zone:string]:boolean} = {};
+export class Armor extends Item {
+    /* these fields come directly from the item-database.json, complete with inconsistent casing. */
+    readonly armorClass:number;
+    readonly BluntThroughput:number;
+    readonly Durability:number;
+    readonly MaxDurability:number;
+    readonly ArmorMaterial:string;
 
-    constructor(
-        obj:{
-            raw:any,
-            id:number,
-            slug:string,
-            armor_class:number,
-            blunt_throughput:number,
-            durability:number,
-            max_durability:number,
-            material:string,
-            armor_zones: {[zone:string]:boolean},
-        }
-    ) {
-        this.raw              = obj.raw;
-        this.id               = obj.id;
-        this.slug             = obj.slug;
-        this.armor_class      = obj.armor_class;
-        this.blunt_throughput = obj.blunt_throughput;
-        this.durability       = obj.durability;
-        this.max_durability   = obj.max_durability;
-        this.material         = obj.material;
-        this.armor_zones      = obj.armor_zones;
+    readonly armor_zones:{[zone:string]:boolean} = {};
+    readonly resistance:number;
+    readonly destructibility:number;
+    readonly min_repair_degradation:number;
+    readonly max_repair_degradation:number;
+
+    constructor(id:number, raw: any) {
+        super(id, raw);
+
+        this.armorClass = this.armorClass || 0;
+        this.BluntThroughput = this.BluntThroughput || 1;
+        this.Durability = this.Durability || 0;
+        this.MaxDurability = this.MaxDurability || 0;
+        this.ArmorMaterial = this.ArmorMaterial || null;
+
+        this.armor_zones = extractArmorZones(raw);
+        this.resistance = this.compute_resistance();
+        this.destructibility = this.compute_destructibility();
+        this.min_repair_degradation = this.compute_min_repair_degradation();
+        this.max_repair_degradation = this.compute_max_repair_degradation();
     }
 
+    /*
     dup():Armor {
-        return new Armor(this);
+        return new Armor(this.id, this.raw);
     }
+    */
     get name():string {
         return item_name(this.id);
     }
-    get resistance():number {
+
+    private compute_resistance():number {
         /* This is defined in a lookup table in confg.json, but was a simple calculation */
-        if (this.armor_class === 0) {
+        if (this.armorClass === 0) {
             return 1;
         }
-        return this.armor_class * 10;
+        return this.armorClass * 10;
     }
-    get destructibility():number {
-        return config['armor_materials'][this.material]['Destructibility'];
+    private compute_destructibility():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['Destructibility'];
+        } else {
+            return -1000;
+        }
     }
-    get min_repair_degradation():number {
-        return config['armor_materials'][this.material]['MinRepairDegradation'];
+    private compute_min_repair_degradation():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['MinRepairDegradation'];
+        }
     }
-    get max_repair_degradation():number {
-        return config['armor_materials'][this.material]['MaxRepairDegradation'];
+    private compute_max_repair_degradation():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['MaxRepairDegradation'];
+            return -1000;
+        }
     }
 };
 
@@ -103,44 +110,23 @@ const NOHELMET = -2;  /* match with build_ts_files.py */
 const NOVEST = -3;  /* match with build_ts_files.py */
 
 armor_list.push(
-    new Armor({
-        raw              : {},
+    new Armor(NOARMOR, {
         id               : NOARMOR,
         slug             : "noarmor",
-        armor_class      : 0,
-        blunt_throughput : 1,
-        durability       : 0,
-        max_durability   : 0,
-        material         : null,
-        armor_zones      : {},
     })
 );
 
 helmet_list.push(
-    new Armor({
-        raw              : {},
+    new Armor(NOHELMET, {
         id               : NOHELMET,
         slug             : "nohelmet",
-        armor_class      : 0,
-        blunt_throughput : 1,
-        durability       : 0,
-        max_durability   : 0,
-        material         : null,
-        armor_zones      : {},
     })
 );
 
 vest_list.push(
-    new Armor({
-        raw              : {},
+    new Armor(NOVEST, {
         id               : NOVEST,
         slug             : "novest",
-        armor_class      : 0,
-        blunt_throughput : 1,
-        durability       : 0,
-        max_durability   : 0,
-        material         : null,
-        armor_zones      : {},
     })
 );
 
@@ -154,19 +140,7 @@ for (let id in items) {
             continue;
         }
 
-        let armor =
-            new Armor({
-                raw              : item,
-                id               : parseInt(id),
-                slug             : item.slug,
-                armor_class      : item.armorClass,
-                blunt_throughput : item.BluntThroughput,
-                durability       : item.Durability,
-                max_durability   : item.MaxDurability,
-                material         : item.ArmorMaterial,
-                armor_zones      : extractArmorZones(item),
-            });
-
+        let armor = new Armor(parseInt(id), item.raw);
 
         if (item.parent_id === well_known_ids['armor']) {
             armor_list.push(armor);

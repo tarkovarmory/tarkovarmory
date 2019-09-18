@@ -23,7 +23,7 @@ function ArmorSelect(props:{value:string, onChange:(ev)=>any}) {
         <select value={props.value} onChange={props.onChange}>
             {[0,2,3,4,5,6].map((ac, idx) =>
                 <optgroup key={ac} label={_("Armor Class") + " - " + ac}>
-                    {armor_list.filter(x => x.armor_class === ac).map((armor, idx) =>
+                    {armor_list.filter(x => x.armorClass === ac).map((armor, idx) =>
                         <option key={armor.slug} value={armor.slug}>{armor.name}</option>)}
                 </optgroup>
             )}

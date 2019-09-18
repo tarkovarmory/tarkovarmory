@@ -5,7 +5,6 @@ export function clamp(num:number, a:number, b:number) {
     return Math.max(a, Math.min(b, num));
 }
 export function dup(obj: any): any { /* {{{ */
-
     let ret;
     if (typeof(obj) === "object") {
         if (Array.isArray(obj)) {

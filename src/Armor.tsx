@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { useState, useEffect } from 'react';
 import { _ } from "translate";
-import { Component } from "react";
 import { well_known_ids } from './generated';
-import { chance, dup } from './util';
+import { chance } from './util';
 import { AmmoCaliber, AmmoCaliberValues, ammo_list, } from 'data';
+import { ItemBuilder } from './ItemBuilder';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { Armor, armor_list, helmet_list, vest_list, armor_by_slug, armor_sort_ac_name  } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
@@ -16,9 +17,9 @@ function ArmorSelect(props:{list:Array<Armor>, value:string, onChange:(ev)=>any}
     return (
         <select value={props.value} onChange={props.onChange}>
             {[0,2,3,4,5,6].map((ac, idx) =>
-                props.list.filter(x => x.armor_class === ac).length === 0 ? null :
+                props.list.filter(x => x.armorClass === ac).length === 0 ? null :
                 <optgroup key={ac} label={_("Armor Class") + " - " + ac}>
-                    {props.list.filter(x => x.armor_class === ac).map((armor, idx) =>
+                    {props.list.filter(x => x.armorClass === ac).map((armor, idx) =>
                         <option key={armor.slug} value={armor.slug}>{armor.name}</option>)}
                 </optgroup>
             )}
@@ -27,7 +28,7 @@ function ArmorSelect(props:{list:Array<Armor>, value:string, onChange:(ev)=>any}
 }
 
 
-export class ArmorAnalyzer extends Component<{}, any> {
+export class ArmorAnalyzer extends React.Component<{}, any> {
     constructor(props) {
         super(props);
 
@@ -65,17 +66,17 @@ export class ArmorAnalyzer extends Component<{}, any> {
                     <div>
                         <h4>Helmet</h4>
                         <ArmorSelect list={helmet_list} value={this.state.selected_helmet} onChange={this.selectHelmet} />
-                        <ItemBuilder />
+                        <ItemBuilder name='helmet' default={helmet_list[0]} options={helmet_list} />
                     </div>
                     <div>
                         <h4>Armor</h4>
                         <ArmorSelect list={armor_list} value={this.state.selected_armor} onChange={this.selectArmor} />
-                        <ItemBuilder />
+                        <ItemBuilder name='armor' default={armor_list[0]} options={vest_list} />
                     </div>
                     <div>
                         <h4>Vest</h4>
                         <ArmorSelect list={vest_list} value={this.state.selected_vest} onChange={this.selectVest} />
-                        <ItemBuilder />
+                        <ItemBuilder name='vest' default={vest_list[0]} options={vest_list} />
                     </div>
                 </div>
                 </div>
@@ -188,44 +189,6 @@ export class ArmorAnalyzer extends Component<{}, any> {
                 </div>
             </div>
         );
-    }
-}
-
-
-export class ItemBuilder extends Component<{}, {}> {
-    public render() {
-        return <div>Item builder</div>
-        /*
-        return (
-            <div className='ItemBuilder'>
-                <select className='weapon-select' value={this.state.selected} onChange={this.select}>
-                    {weapon_types.map((wt, idx) => (
-                        <optgroup key={idx} label={wt.long_name}>
-                            {weapons.filter(item => item.parent.id === wt.id).map((item, idx) => (
-                                <option value={item.slug}>{item.name}</option>
-                            ))}
-                        </optgroup>
-                    ))}
-                </select>
-
-                <div className='attributes'>
-                    {all_attributes.map((attr, idx) => (
-                        <div className='calculated-attribute'>
-                            <div className='name'>
-                                {attr[1]}
-                            </div>
-                            <div className='value'>
-                                {beautify(attr[0], computed[attr[0]])}
-                            </div>
-                        </div>
-                    ))}
-                    <div className='firing-modes'>
-                        Firing modes: {item['weapFireType'].join(", ")}
-                    </div>
-                </div>
-            </div>
-        );
-        */
     }
 }
 

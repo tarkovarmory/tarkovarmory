@@ -3,7 +3,7 @@ import { _ } from "translate"; import { Component } from "react";
 import { well_known_ids } from './generated';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
-import { dup } from './util';
+//import { dup } from './util';
 
 
 const weapons = items.filter(item => item.isDescendentOf(well_known_ids['weapon']) && item.children.length === 0)

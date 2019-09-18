@@ -181,13 +181,16 @@ export function get_auto_language():"en"|"ru"|"de" {
         return auto_language;
     }
 
-    for (let lang of navigator.languages) {
-        if (lang.indexOf("ru") >= 0) {
-            return "ru";
+    try {
+        for (let lang of navigator.languages) {
+            if (lang.indexOf("ru") >= 0) {
+                return "ru";
+            }
+            if (lang.indexOf("de") >= 0) {
+                return "de";
+            }
         }
-        if (lang.indexOf("de") >= 0) {
-            return "de";
-        }
+    } catch (e) {
     }
 
     return "en";

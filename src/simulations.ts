@@ -17,6 +17,7 @@ export function set_shots_to_kill_cache(_cache:any):void {
     cache = _cache;
 }
 
+
 export function shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:number=80, blowthrough_rate:number = 0.0, simulations:number=250):ShotsToKill {
     if (armor_list.length === 0 || !armor_list[0]) {
         return {
@@ -30,7 +31,7 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:numbe
 
     let cache_key = `${bullet.id}.${health}.${blowthrough_rate}`;
     for (let armor of armor_list) {
-        cache_key += `.${armor.id}@${armor.durability}`;
+        cache_key += `.${armor.id}@${armor.Durability}`;
     }
     if (cache_key in cache) {
         return {
@@ -64,23 +65,22 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:numbe
     return ret;
 }
 
-function _shots_to_kill(_bullet:Ammo, _armor_list:Array<Armor>, health:number, blowthrough_rate:number):number {
-    let armor_list = _armor_list.map(armor => armor.dup());
+function _shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:number, blowthrough_rate:number):number {
     let head_health = 35;
 
     let shot_count = 0;
-    for (let i = 0; i < 200; ++i) {
+    let armor_durabilities = armor_list.map(armor => armor.Durability);
+    for (let i = 0; i < 400; ++i) {
         shot_count += 1;
 
-        for (let i = 0; i < _bullet.bullets; ++i) {
-            let bullet = _bullet.dup();
-            simulate_hit(armor_list, bullet);
-            health -= bullet.damage;
+        for (let j = 0; j < bullet.bullets; ++j) {
+            /* armor durabilties get's modified by this call */
+            let bullet_damage = simulate_hit(armor_list, bullet, bullet.damage, bullet.penetration_power, armor_durabilities);
+            health -= bullet_damage;
         }
         if (health <= 0) {
             if (blowthrough_rate === 0) {
                 return shot_count;
-
             } else {
                 let hh = head_health;
 
@@ -123,16 +123,16 @@ public bool _E000(Vector3 _F7C2, Vector3 _F7C3, _E507 _F7C4)
 
 
 //public void _E001(_E507 bullet) {
-export function simulate_block(armor:Armor, bullet:Ammo):boolean {
+export function simulate_block(armor_durability:number, bullet_penetration_power:number, armor:Armor, bullet:Ammo):boolean {
 //    if (Repairable.Durability > 0.0) {
-    if (armor.durability > 0.0) {
+    if (armor_durability > 0.0) {
 //        float num = Repairable.Durability / Repairable.MaxDurability * 100f;
-        let num = (armor.durability / armor.max_durability) * 100.0;
+        let num = (armor_durability / armor.MaxDurability) * 100.0;
 
 //        float num3 = (121f - 5000f / (45f + num * 2f)) * armor.resistance * 0.01f;
         let num3 = (121.0 - 5000.0 / (45.0 + num * 2.0)) * armor.resistance * 0.01;
 //        float num4 = (num3 >= bullet.penetration_power + 15f) ? 0f : ((!(num3 >= bullet.penetration_power)) ? (100f + bullet.penetration_power / (0.9f * num3 - bullet.penetration_power)) : (0.4f * (num3 - bullet.penetration_power - 15f) * (num3 - bullet.penetration_power - 15f)));
-        let num4 = (num3 >= bullet.penetration_power + 15.0) ? 0.0 : ((!(num3 >= bullet.penetration_power)) ? (100.0 + bullet.penetration_power / (0.9 * num3 - bullet.penetration_power)) : (0.4 * (num3 - bullet.penetration_power - 15.0) * (num3 - bullet.penetration_power - 15.0)));
+        let num4 = (num3 >= bullet_penetration_power + 15.0) ? 0.0 : ((!(num3 >= bullet_penetration_power)) ? (100.0 + bullet_penetration_power / (0.9 * num3 - bullet_penetration_power)) : (0.4 * (num3 - bullet_penetration_power - 15.0) * (num3 - bullet_penetration_power - 15.0)));
 //        if (num4 - bullet.Randoms._E10A(bullet.RandomSeed) * 100f < 0f) {
 //            bullet.BlockedBy = Item.Id;
 //            return true;
@@ -150,14 +150,24 @@ export function simulate_block(armor:Armor, bullet:Ammo):boolean {
 
 
 //public void _E002(ref _E506 bullet, EBodyPart _F7C7, EDamageType _F7C8, out float damage_to_armor) {
-export function simulate_hit(armor_list:Array<Armor>, bullet:Ammo):void {
+export function simulate_hit(
+    armor_list:Array<Armor>,
+    bullet:Ammo,
+    bullet_damage:number,
+    bullet_penetration_power:number,
+    armor_durabilities:Array<number> /* read/write */)
+    : number /* bullet damage */
+{
     let blocked = false;
 
-    for (let armor of armor_list) {
+    for (let armor_idx = 0; armor_idx < armor_list.length; ++armor_idx) {
+        let armor = armor_list[armor_idx];
+        let armor_durability = armor_durabilities[armor_idx];
+
         //   damage_to_armor = 0f;
         let damage_to_armor = 0;
         //   if (Repairable.Durability > 0f) {
-        if (armor.durability > 0.0) {
+        if (armor_durability > 0.0) {
         //       if (bullet.DeflectedBy == Item.Id) {
         //           bullet.Damage /= 2f;
         //           bullet.ArmorDamage /= 2f;
@@ -166,7 +176,7 @@ export function simulate_hit(armor_list:Array<Armor>, bullet:Ammo):void {
             /* NOTE: Deflection not accounted for. Would probably be cool to do this.  */
 
         //       float num = Repairable.Durability / Repairable.MaxDurability * 100f;
-            let num = (armor.durability / armor.max_durability) * 100.0;
+            let num = (armor_durability / armor.MaxDurability) * 100.0;
         //       float num3 = (121f - 5000f / (45f + num * 2f)) * armor.resistance * 0.01f;
             let num3 = (121.0 - 5000.0 / (45.0 + num * 2.0)) * armor.resistance * 0.01;
 
@@ -174,10 +184,12 @@ export function simulate_hit(armor_list:Array<Armor>, bullet:Ammo):void {
         //           damage_to_armor = bullet.PenetrationPower * bullet.ArmorDamage * Mathf.Clamp(bullet.PenetrationPower / armor.resistance, 0.6f, 1.1f) * Singleton<_E164>.Instance.ArmorMaterials[Template.ArmorMaterial].Destructibility;
         //           bullet.Damage *= Template.BluntThroughput * Mathf.Clamp(1f - 0.03f * (num3 - bullet.PenetrationPower), 0.2f, 1f);
          //           bullet.StaminaBurnRate *= ((!(Template.BluntThroughput > 0f)) ? 1f : (3f / Mathf.Sqrt(Template.BluntThroughput)));
-            if (simulate_block(armor, bullet)) {
-                damage_to_armor = bullet.penetration_power * bullet.armor_damage * clamp(bullet.penetration_power / armor.resistance, 0.6, 1.1) * armor.destructibility;
-                bullet.damage *= armor.blunt_throughput * clamp(1.0 - 0.03 * (num3 - bullet.penetration_power), 0.2, 1.0);
-                bullet.stamina_burn_per_damage *= ((!(armor.blunt_throughput > 0.0)) ? 1.0 : (3.0 / Math.sqrt(armor.blunt_throughput)));
+            if (simulate_block(armor_durability, bullet_penetration_power, armor, bullet)) {
+                damage_to_armor = bullet_penetration_power * bullet.armor_damage * clamp(bullet_penetration_power / armor.resistance, 0.6, 1.1) * armor.destructibility;
+                bullet_damage *= armor.BluntThroughput * clamp(1.0 - 0.03 * (num3 - bullet_penetration_power), 0.2, 1.0);
+
+                //bullet_stamina_burn_per_damage *= ((!(armor.blunt_throughput > 0.0)) ? 1.0 : (3.0 / Math.sqrt(armor.blunt_throughput)));
+
                 blocked = true;
 
             }
@@ -188,10 +200,10 @@ export function simulate_hit(armor_list:Array<Armor>, bullet:Ammo):void {
         //           bullet.PenetrationPower *= num4;
         //       }
             else {
-                damage_to_armor = bullet.penetration_power * bullet.armor_damage * clamp(bullet.penetration_power / armor.resistance, 0.5, 0.9) * armor.destructibility;
-                let num4 = clamp(bullet.penetration_power / (num3 + 12.0), 0.6, 1.0);
-                bullet.damage *= num4;
-                bullet.penetration_power *= num4;
+                damage_to_armor = bullet_penetration_power * bullet.armor_damage * clamp(bullet_penetration_power / armor.resistance, 0.5, 0.9) * armor.destructibility;
+                let num4 = clamp(bullet_penetration_power / (num3 + 12.0), 0.6, 1.0);
+                bullet_damage *= num4;
+                bullet_penetration_power *= num4;
             }
         //       damage_to_armor = Mathf.Max(1f, damage_to_armor);
         //       Repairable.Durability -= damage_to_armor;
@@ -199,17 +211,21 @@ export function simulate_hit(armor_list:Array<Armor>, bullet:Ammo):void {
         //           Repairable.Durability = 0f;
         //       }
            damage_to_armor = Math.max(1.0, damage_to_armor);
-           armor.durability -= damage_to_armor;
-           if (armor.durability < 0.0) {
-               armor.durability = 0.0;
+           armor_durability -= damage_to_armor;
+           if (armor_durability < 0.0) {
+               armor_durability = 0.0;
            }
         //       Item._E007(_E000_E0DD: false, _E000_E0DE: false);
         //   }
         //}
+
+            armor_durabilities[armor_idx] = armor_durability;
         }
 
         if (blocked) {
-            break;
+            return bullet_damage;
         }
     }
+
+    return bullet_damage;
 }

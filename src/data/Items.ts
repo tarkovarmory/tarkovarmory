@@ -1,7 +1,7 @@
 import { genitems as generated_items, well_known_ids, images } from 'generated';
 import { item_name, item_long_name } from '../translate';
 import { caliber_to_type } from './Ammo';
-import { dup } from '../util';
+//import { dup } from '../util';
 
 export let slug2id = {};
 export let slug2item = {};
@@ -12,6 +12,8 @@ export type SlotMap = {[slot_name:string]:string}; /* ex: ["W.mod_gasblock.mod_h
 export type ConflictMap = {[item_id:number]:number};
 
 export class Item {
+    public readonly raw:any;
+
     id:number;
     parent_id:number;
     slug:string;
@@ -25,9 +27,11 @@ export class Item {
     match:boolean; /* used for searching */
 
     constructor(id:number, raw:any) {
+        this.raw = raw;
         this.children = [];
         for (let field in raw) {
-            this[field] = dup(raw[field]);
+            //this[field] = dup(raw[field]);
+            this[field] = raw[field];
         }
         this.id = id;
     }

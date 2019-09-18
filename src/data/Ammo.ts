@@ -34,22 +34,22 @@ export class Ammo {
     This has the definition of "Usefulness" and meta value with frag chance
     */
 
-    public raw:any;
-    public id:number;
-    public slug:string;
-    public caliber:AmmoCaliber;
-    public bullets:number;
-    public damage:number;
-    public penetration_power:number;
-    public penetration_power_deviation:number;
-    public misfire_chance:number;
-    public speed:number;
-    public ricochet_chance:number;
-    public fragmentation_chance:number;
-    public ballistic_coeficient:number;
-    public speed_retardation:number;
-    public armor_damage:number;
-    public stamina_burn_per_damage:number;
+    public readonly raw:any;
+    public readonly id:number;
+    public readonly slug:string;
+    public readonly caliber:AmmoCaliber;
+    public readonly bullets:number;
+    public readonly damage:number;
+    public readonly penetration_power:number;
+    public readonly penetration_power_deviation:number;
+    public readonly misfire_chance:number;
+    public readonly speed:number;
+    public readonly ricochet_chance:number;
+    public readonly fragmentation_chance:number;
+    public readonly ballistic_coeficient:number;
+    public readonly speed_retardation:number;
+    public readonly armor_damage:number;
+    public readonly stamina_burn_per_damage:number;
 
     constructor(
         obj:{
@@ -89,9 +89,12 @@ export class Ammo {
         this.stamina_burn_per_damage = obj.stamina_burn_per_damage;
     }
 
+    /*
     dup():Ammo {
         return new Ammo(this);
     }
+    */
+
 
     get name():string {
         return item_name(this.id);
