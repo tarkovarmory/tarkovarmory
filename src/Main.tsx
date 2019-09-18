@@ -4,7 +4,6 @@ import * as ReactDOM from 'react-dom';
 import { _ } from "translate";
 import { Component } from "react";
 import { Redirect, Route, Link } from 'react-router-dom';
-import { ammo_list, armor_list, weapon_list } from 'data';
 import { Nav } from "./Nav";
 import Ammunition from "./Ammunition";
 import Weapons from "./Weapons";

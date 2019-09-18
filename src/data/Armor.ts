@@ -38,8 +38,6 @@ export function armor_sort_ac_name(a:Item, b:Item):number {
     return 0;
 }
 
-
-
 const NOARMOR = -1;  /* match with build_ts_files.py */
 const NOHELMET = -2;  /* match with build_ts_files.py */
 const NOVEST = -3;  /* match with build_ts_files.py */

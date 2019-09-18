@@ -6,13 +6,15 @@ import { item_name, item_long_name } from '../translate';
 export type WeaponType = "rifle" | "carbine" | "light_mg" | "smg" | "shotgun" | "dmr" | "sniper" | "pistol";
 export type FiringMode = "single" | "auto" | "burst";
 
+/*
 class Weapon extends Item {
     constructor(id:number, raw:any) {
         super(id, raw);
     }
 };
+*/
 
-export const weapon_list:Array<Weapon> = [];
+//export const weapon_list:Array<Weapon> = [];
 
 //console.log(items);
 

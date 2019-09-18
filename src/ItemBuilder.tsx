@@ -67,17 +67,15 @@ export function beautify(name:string, n:any):string {
 
         case 'ammoCaliber':
             return _(caliber_to_type(n, ""));
-    }
 
-    //
-    // else, is number
-    //
+        default:
+            // else is number, fall trhough.
+    }
 
     if (!n || (n > -0.0001 && n < 0.0001)) {
         return null;
     }
     let ret = typeof(n) === "number" ? n.toFixed(roughPrecision(n)) : n;
-
 
     switch (name) {
         case 'Velocity':
