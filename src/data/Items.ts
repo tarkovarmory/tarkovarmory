@@ -1,4 +1,4 @@
-import { genitems as generated_items, well_known_ids, images } from 'generated';
+import { genitems as generated_items, well_known_ids, images, config } from 'generated';
 import { item_name, item_long_name } from '../translate';
 import { caliber_to_type } from './Ammo';
 //import { dup } from '../util';
@@ -26,14 +26,44 @@ export class Item {
 
     match:boolean; /* used for searching */
 
+    /* these fields come directly from the item-database.json, complete with inconsistent casing. */
+    readonly armorClass:number;
+    readonly BluntThroughput:number;
+    readonly Durability:number;
+    readonly MaxDurability:number;
+    readonly ArmorMaterial:string;
+
+    /* we compute these */
+    readonly armor_zones:{[zone:string]:boolean} = {};
+    readonly resistance:number;
+    readonly destructibility:number;
+    readonly min_repair_degradation:number;
+    readonly max_repair_degradation:number;
+
+
     constructor(id:number, raw:any) {
-        this.raw = raw;
-        this.children = [];
         for (let field in raw) {
             //this[field] = dup(raw[field]);
             this[field] = raw[field];
         }
+
         this.id = id;
+        this.raw = raw;
+        this.children = [];
+
+
+        this.armorClass = this.armorClass || 0;
+        this.BluntThroughput = this.BluntThroughput || 1;
+        this.Durability = this.Durability || 0;
+        this.MaxDurability = this.MaxDurability || 0;
+        this.ArmorMaterial = this.ArmorMaterial || null;
+
+        this.armor_zones = extractArmorZones(raw);
+        this.resistance = this.compute_resistance();
+        this.destructibility = this.compute_destructibility();
+        this.min_repair_degradation = this.compute_min_repair_degradation();
+        this.max_repair_degradation = this.compute_max_repair_degradation();
+
     }
 
     get name():string {
@@ -123,6 +153,32 @@ export class Item {
 
         return conflict_map;
     }
+
+    private compute_resistance():number {
+        /* This is defined in a lookup table in confg.json, but was a simple calculation */
+        if (this.armorClass === 0) {
+            return 1;
+        }
+        return this.armorClass * 10;
+    }
+    private compute_destructibility():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['Destructibility'];
+        } else {
+            return -1000;
+        }
+    }
+    private compute_min_repair_degradation():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['MinRepairDegradation'];
+        }
+    }
+    private compute_max_repair_degradation():number {
+        if (this.ArmorMaterial in config['armor_materials']) {
+            return config['armor_materials'][this.ArmorMaterial]['MaxRepairDegradation'];
+            return -1000;
+        }
+    }
 };
 
 for (let id in generated_items) {
@@ -130,6 +186,13 @@ for (let id in generated_items) {
         console.error("Fialed to parse id:", id);
     }
     items[parseInt(id)] = new Item(parseInt(id), generated_items[id]);
+}
+
+for (let item of items) {
+    if (item) {
+        item.children = [];
+        item.slot_parents = [];
+    }
 }
 
 /* compute parent and children */
@@ -159,4 +222,37 @@ for (let item of items) {
         slug2item[item.slug] = item;
         id2slug[item.id] = item.slug;
     }
+}
+
+function extractArmorZones(item:any):{[zone:string]:boolean} {
+    let ret:{[zone:string]:boolean} = {};
+    if (item.armorZone) {
+        for (let z of item.armorZone) {
+            if (z !== "Head") {
+                if (z === "Chest") {
+                    z = "thorax";
+                }
+                if (z === "LeftArm") {
+                    z = "arms";
+                }
+                if (z === "RightArm") {
+                    continue;
+                }
+                if (z === "LeftLeg") {
+                    z = "legs";
+                }
+                if (z === "RightLeg") {
+                    continue;
+                }
+                ret[z.toLowerCase()] = true;
+            }
+        }
+    }
+    if (item.headSegments) {
+        for (let z of item.headSegments) {
+            ret[z.toLowerCase()] = true;
+        }
+    }
+
+    return ret;
 }

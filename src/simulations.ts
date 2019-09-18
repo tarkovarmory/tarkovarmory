@@ -1,4 +1,4 @@
-import { Ammo, Armor, armor_list, ammo_list } from 'data';
+import { Ammo, Item, armor_list, ammo_list } from 'data';
 import { clamp } from './util';
 
 interface ShotsToKill {
@@ -18,7 +18,7 @@ export function set_shots_to_kill_cache(_cache:any):void {
 }
 
 
-export function shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:number=80, blowthrough_rate:number = 0.0, simulations:number=250):ShotsToKill {
+export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number=80, blowthrough_rate:number = 0.0, simulations:number=250):ShotsToKill {
     if (armor_list.length === 0 || !armor_list[0]) {
         return {
             min: -1,
@@ -65,7 +65,7 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:numbe
     return ret;
 }
 
-function _shots_to_kill(bullet:Ammo, armor_list:Array<Armor>, health:number, blowthrough_rate:number):number {
+function _shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number, blowthrough_rate:number):number {
     let head_health = 35;
 
     let shot_count = 0;
@@ -123,7 +123,7 @@ public bool _E000(Vector3 _F7C2, Vector3 _F7C3, _E507 _F7C4)
 
 
 //public void _E001(_E507 bullet) {
-export function simulate_block(armor_durability:number, bullet_penetration_power:number, armor:Armor, bullet:Ammo):boolean {
+export function simulate_block(armor_durability:number, bullet_penetration_power:number, armor:Item, bullet:Ammo):boolean {
 //    if (Repairable.Durability > 0.0) {
     if (armor_durability > 0.0) {
 //        float num = Repairable.Durability / Repairable.MaxDurability * 100f;
@@ -151,7 +151,7 @@ export function simulate_block(armor_durability:number, bullet_penetration_power
 
 //public void _E002(ref _E506 bullet, EBodyPart _F7C7, EDamageType _F7C8, out float damage_to_armor) {
 export function simulate_hit(
-    armor_list:Array<Armor>,
+    armor_list:Array<Item>,
     bullet:Ammo,
     bullet_damage:number,
     bullet_penetration_power:number,

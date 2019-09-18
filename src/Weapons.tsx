@@ -3,6 +3,7 @@ import { _ } from "translate"; import { Component } from "react";
 import { well_known_ids } from './generated';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
+import { beautify } from './ItemBuilder';
 //import { dup } from './util';
 
 
@@ -37,65 +38,6 @@ const all_attributes = [
     ['ammoCaliber', 'Caliber'],
 ];
 
-
-function roughPrecision(a:number):number {
-    let ct = 0;
-    a -= Math.floor(a);
-    while (a > 0.01) {
-        a -= Math.floor(a);
-        a *= 10;
-        ct += 1;
-    }
-    return Math.min(3, ct);
-}
-
-function beautify(name:string, n:any) {
-    switch (name) {
-        case 'weapFireType':
-            return n.join(",");
-
-        case 'ammoCaliber':
-            return _(caliber_to_type(n, ""));
-    }
-
-    //
-    // else, is number
-    //
-
-    if (!n || (n > -0.0001 && n < 0.0001)) {
-        return null;
-    }
-    let ret = n.toFixed(roughPrecision(n));
-
-
-    switch (name) {
-        case 'Velocity':
-        case 'Recoil':
-        case 'Accuracy':
-            ret += ' %';
-            break;
-
-        case 'SightingRange':
-        case 'bEffDist':
-        case 'bHearDist':
-            ret += ' m';
-            break;
-
-        case 'Weight':
-            ret += ' Kg';
-            break;
-
-        case 'Convergence':
-            ret += ' s';
-            break;
-
-        case 'bFirerate':
-            ret += ' rpm';
-            break;
-    }
-
-    return ret;
-}
 
 export class Weapons extends Component<{}, any> {
     constructor(props) {

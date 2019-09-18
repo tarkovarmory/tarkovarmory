@@ -3,12 +3,23 @@
         text-align: center;
     }
     #builders {
-        display: inline-flex;
-        flex-direction: row;
-
         > div {
             margin: 1rem;
             text-align: left;
+            > table {
+                margin: auto;
+                margin-top: 6rem;
+            }
+        }
+    }
+
+    .armor-builder {
+        th:first-child {
+            min-width: 12rem;
+        }
+
+        th.armor-material, td.armor-material {
+            min-width: 12rem;
         }
     }
 

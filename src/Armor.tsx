@@ -7,19 +7,19 @@ import { chance } from './util';
 import { AmmoCaliber, AmmoCaliberValues, ammo_list, } from 'data';
 import { ItemBuilder } from './ItemBuilder';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
-import { Armor, armor_list, helmet_list, vest_list, armor_by_slug, armor_sort_ac_name  } from './data';
+import { armor_list, helmet_list, vest_list, armor_by_slug, armor_sort_ac_name  } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
 import { get_search, update_search } from './search';
 import { shots_to_kill } from './simulations';
 
 
-function ArmorSelect(props:{list:Array<Armor>, value:string, onChange:(ev)=>any}) {
+function ArmorSelect(props:{options:Array<Item>, value:string, onChange:(ev)=>any}):JSX.Element {
     return (
         <select value={props.value} onChange={props.onChange}>
             {[0,2,3,4,5,6].map((ac, idx) =>
-                props.list.filter(x => x.armorClass === ac).length === 0 ? null :
+                props.options.filter(x => x.armorClass === ac).length === 0 ? null :
                 <optgroup key={ac} label={_("Armor Class") + " - " + ac}>
-                    {props.list.filter(x => x.armorClass === ac).map((armor, idx) =>
+                    {props.options.filter(x => x.armorClass === ac).map((armor, idx) =>
                         <option key={armor.slug} value={armor.slug}>{armor.name}</option>)}
                 </optgroup>
             )}
@@ -27,6 +27,19 @@ function ArmorSelect(props:{list:Array<Armor>, value:string, onChange:(ev)=>any}
     );
 }
 
+
+const attributes = [
+    ['armorClass', 'Armor Class'],
+    ['BluntThroughput', 'Blunt Throughput'],
+    ['Durability', 'Durability'],
+    ['MaxDurability', 'Max Durability'],
+    //['armor_zones', 'Armor Zones'],
+    ['resistance', 'Resistance'],
+    ['destructibility', 'Destructibility'],
+    //['min_repair_degradation', 'Min Repair Degradation'],
+    //['max_repair_degradation', 'Max Repair Degradation'],
+    ['ArmorMaterial', 'Armor Material'],
+];
 
 export class ArmorAnalyzer extends React.Component<{}, any> {
     constructor(props) {
@@ -64,19 +77,28 @@ export class ArmorAnalyzer extends React.Component<{}, any> {
                 <div id='builders-container'>
                 <div id='builders'>
                     <div>
-                        <h4>Helmet</h4>
-                        <ArmorSelect list={helmet_list} value={this.state.selected_helmet} onChange={this.selectHelmet} />
-                        <ItemBuilder name='helmet' default={helmet_list[0]} options={helmet_list} />
+                        <ItemBuilder name='helmet' options={helmet_list}
+                            header={'Helmet'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootselector={ArmorSelect}
+                        />
                     </div>
                     <div>
-                        <h4>Armor</h4>
-                        <ArmorSelect list={armor_list} value={this.state.selected_armor} onChange={this.selectArmor} />
-                        <ItemBuilder name='armor' default={armor_list[0]} options={vest_list} />
+                        <ItemBuilder name='armor' options={vest_list}
+                            header={'Armor'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootselector={ArmorSelect}
+                        />
                     </div>
                     <div>
-                        <h4>Vest</h4>
-                        <ArmorSelect list={vest_list} value={this.state.selected_vest} onChange={this.selectVest} />
-                        <ItemBuilder name='vest' default={vest_list[0]} options={vest_list} />
+                        <ItemBuilder name='vest' options={vest_list}
+                            header={'Vest'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootselector={ArmorSelect}
+                        />
                     </div>
                 </div>
                 </div>
