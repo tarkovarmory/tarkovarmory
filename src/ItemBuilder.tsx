@@ -23,16 +23,16 @@ interface ItemBuilderProps {
     'onChange': () => void;
     'modifiableDurability'?: boolean;
     'required'?: boolean;
+    'defaultSlug'?: string;
 }
 
 
 export function ItemBuilder(props:ItemBuilderProps):JSX.Element {
-    let selected_slug = get_search1(props.name, props.options[0].slug);
+    let selected_slug = get_search1(props.name, props.defaultSlug || props.options[0].slug);
     let item = slug2item[selected_slug] || props.options[0];
 
     let slot_map = get_search_all1();
     let conflicts = item.calculate_conflict_map(props.name, slot_map);
-
 
     return (
         <table className={'ItemBuilder rotated-title-table ' + props.addClass}>
@@ -57,7 +57,7 @@ function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:Conflict
     if (!props.options || !props.options.length) {
         return null;
     }
-    let selected_slug = get_search1(props.name, props.required ? props.options[0].slug : '');
+    let selected_slug = get_search1(props.name, props.required ? props.defaultSlug || props.options[0].slug : props.defaultSlug || '');
 
     //let item = slug2item[selected_slug] || props.options[0];
     let item = slug2item[selected_slug] || null;
@@ -94,6 +94,13 @@ function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:Conflict
                             </td>
                         );
                     }
+                    else if (arr[0] === 'armor_zones_string' && computed[arr[0]]) {
+                        return (
+                            <td className='armor-zones' key={arr[0]}>
+                                {computed[arr[0]].split(' ').map(s => <div key={s}>{s}</div>)}
+                            </td>
+                        );
+                    }
                     else {
                         return (<td key={arr[0]}>{beautify(arr[0], computed[arr[0]])}</td>)
                     }
@@ -109,6 +116,7 @@ function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:Conflict
                         name,
                         options,
                         rootSelector: GenericSelector,
+                        defaultSlug: null,
                         required: item.slots[slot_name].required,
                     }
                 );

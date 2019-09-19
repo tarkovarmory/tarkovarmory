@@ -37,9 +37,9 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
         _forceUpdate(0);
     }
 
-    let helmet = armor_by_slug(get_search1('helmet', 'nohelmet'));
-    let armor = armor_by_slug(get_search1('armor', 'noarmor'));
-    let vest = armor_by_slug(get_search1('vest', 'novest'));
+    let helmet = armor_by_slug(get_search1('helmet', 'helmet')); /* helmet == kiver */
+    let armor = armor_by_slug(get_search1('armor', 'item-equipment-armor-iotv'));
+    let vest = armor_by_slug(get_search1('vest', 'item-equipment-rig-carriertactec'));
 
     let nohelmet = armor_by_slug('nohelmet');
     let noarmor = armor_by_slug('noarmor');
@@ -100,40 +100,42 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
 
     return (
         <div id='Armor'>
-
             <div id='builders-container'>
-            <div id='builders'>
-                <div>
-                    <ItemBuilder name='helmet' options={helmet_list}
-                        header={'Helmet'}
-                        addClass={'armor-builder'}
-                        attributes={attributes}
-                        rootSelector={ArmorSelect}
-                        modifiableDurability={true}
-                        onChange={forceUpdate}
-                    />
+                <div id='builders'>
+                    <div>
+                        <ItemBuilder name='helmet' options={helmet_list}
+                            defaultSlug='helmet'
+                            header={'Helmet'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootSelector={ArmorSelect}
+                            modifiableDurability={true}
+                            onChange={forceUpdate}
+                        />
+                    </div>
+                    <div>
+                        <ItemBuilder name='armor' options={armor_list}
+                            defaultSlug='item-equipment-armor-iotv'
+                            header={'Armor'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootSelector={ArmorSelect}
+                            modifiableDurability={true}
+                            onChange={forceUpdate}
+                        />
+                    </div>
+                    <div>
+                        <ItemBuilder name='vest' options={vest_list}
+                            defaultSlug='item-equipment-rig-carriertactec'
+                            header={'Vest'}
+                            addClass={'armor-builder'}
+                            attributes={attributes}
+                            rootSelector={ArmorSelect}
+                            modifiableDurability={true}
+                            onChange={forceUpdate}
+                        />
+                    </div>
                 </div>
-                <div>
-                    <ItemBuilder name='armor' options={armor_list}
-                        header={'Armor'}
-                        addClass={'armor-builder'}
-                        attributes={attributes}
-                        rootSelector={ArmorSelect}
-                        modifiableDurability={true}
-                        onChange={forceUpdate}
-                    />
-                </div>
-                <div>
-                    <ItemBuilder name='vest' options={vest_list}
-                        header={'Vest'}
-                        addClass={'armor-builder'}
-                        attributes={attributes}
-                        rootSelector={ArmorSelect}
-                        modifiableDurability={true}
-                        onChange={forceUpdate}
-                    />
-                </div>
-            </div>
             </div>
 
             <div className='adjoined-tables'>
@@ -175,10 +177,6 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                             {/* render_slots(0, "W", item, conflicts, []) */}
                             {ammo.map((ammo, idx) => {
                                 const simulations = 250;
-
-                                let noarmor = armor_by_slug('noarmor');
-                                //let novest = armor_by_slug('novest');
-                                //let nohelm = armor_by_slug('novest');
 
                                 let thorax_stk  = shots_to_kill(ammo, thorax_armor, thorax_armor.map(a => a.custom_durability || 0), 80, 0, simulations)
                                 let stomach_stk = shots_to_kill(ammo, stomach_armor, stomach_armor.map(a => a.custom_durability || 0), 70, 1.5, simulations)
