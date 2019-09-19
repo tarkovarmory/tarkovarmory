@@ -7,9 +7,9 @@ import { hydrate } from "react-dom";
 import { createBrowserHistory } from 'history';
 
 import { set_shots_to_kill_cache } from './simulations';
-import { shots_to_kill_cache } from './precomputed';
+//import { shots_to_kill_cache } from './precomputed';
 import { sort_data } from './data';
-set_shots_to_kill_cache(shots_to_kill_cache);
+//set_shots_to_kill_cache(shots_to_kill_cache);
 
 import Main from "./Main";
 

@@ -10,8 +10,8 @@ import { server_set_search } from './search';
 import { set_auto_language_from_accept, get_interface_language } from './translate';
 
 import { set_shots_to_kill_cache } from './simulations';
-import { shots_to_kill_cache } from './precomputed';
-set_shots_to_kill_cache(shots_to_kill_cache);
+//import { shots_to_kill_cache } from './precomputed';
+//set_shots_to_kill_cache(shots_to_kill_cache);
 
 import { sort_data } from './data';
 

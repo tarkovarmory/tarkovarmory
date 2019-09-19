@@ -8,19 +8,19 @@ tmux: node_modules
 	tmux split-window -v 'exec make runserver'
 	tmux -2 attach-session -t tarkov
 
-precompute: src/precomputed.ts
+#precompute: src/precomputed.ts
 
-src/precomputed.ts: src/precompute.ts data/generated.ts src/simulations.ts dist/precompute.js
-	node dist/precompute.js
+#src/precomputed.ts: src/precompute.ts data/generated.ts src/simulations.ts dist/precompute.js
+#	node dist/precompute.js
 
-dist/precompute.js: src/precompute.ts src/simulations.ts src/data/*.ts
-	mkdir -p dist
-	NODE_PATH=$(NODE_PATH) PATH=$(PATH) PRODUCTION=true webpack --devtool=source-map --config webpack-server.config.js
+#dist/precompute.js: src/precompute.ts src/simulations.ts src/data/*.ts
+#	mkdir -p dist
+#	NODE_PATH=$(NODE_PATH) PATH=$(PATH) PRODUCTION=true webpack --devtool=source-map --config webpack-server.config.js
 
-client: src/precomputed.ts
+client: #src/precomputed.ts
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp --
 
-server: src/precomputed.ts
+server: #src/precomputed.ts
 	#NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp --
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) webpack --watch --progress --colors --config webpack-server.config.js
 

@@ -27,7 +27,7 @@ module.exports = {
     mode: production ? 'production' : 'development',
     entry: {
         'server': './src/server.tsx',
-        'precompute': './src/precompute.ts',
+        //'precompute': './src/precompute.ts',
     },
     resolve: {
         modules: [

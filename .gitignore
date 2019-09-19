@@ -67,3 +67,4 @@ tarkov-armory.tar.gz
 __pycache__
 
 src/precomputed.ts
+tarkovarmory.service
