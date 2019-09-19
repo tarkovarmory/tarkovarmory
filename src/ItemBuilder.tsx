@@ -1,10 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { _ } from "translate";
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
 
+
+interface ItemSelectorProps {
+    options:Array<Item>;
+    value:string;
+    onChange:(HTMLEvent:any)=>void;
+    required?:boolean;
+}
 
 interface ItemBuilderProps {
     'name': string;
@@ -12,14 +19,22 @@ interface ItemBuilderProps {
     'addClass': string;
     'options': Array<Item>;
     'attributes': Array<Array<string>>;
-    'rootselector': (props:{options, value, onChange})=>JSX.Element;
+    'rootselector': (props:ItemSelectorProps)=>JSX.Element;
     'onChange': () => void;
+    'required'?: boolean;
 }
 
 
 export function ItemBuilder(props:ItemBuilderProps):JSX.Element {
+    let selected_slug = get_search1(props.name, props.options[0].slug);
+    let item = slug2item[selected_slug] || props.options[0];
+
+    let slot_map = get_search_all1();
+    let conflicts = item.calculate_conflict_map(props.name, slot_map);
+
+
     return (
-        <table className={'rotated-title-table ' + props.addClass}>
+        <table className={'ItemBuilder rotated-title-table ' + props.addClass}>
             <thead>
                 <tr>
                     <th>{props.header}</th>
@@ -31,42 +46,80 @@ export function ItemBuilder(props:ItemBuilderProps):JSX.Element {
                 </tr>
             </thead>
             <tbody>
-                {ItemBuildRows(props)}
+                {ItemBuildRows(0, props, conflicts)}
             </tbody>
         </table>
     );
 }
 
-function ItemBuildRows(props:ItemBuilderProps):JSX.Element {
-    let [selected_slug, setSelectedSlug] = useState(get_search1(props.name, props.options[0].slug));
+function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:ConflictMap):JSX.Element {
+    if (!props.options || !props.options.length) {
+        return null;
+    }
+    let selected_slug = get_search1(props.name, props.required ? props.options[0].slug : '');
 
-    let item = slug2item[selected_slug] || props.options[0];
+    //let item = slug2item[selected_slug] || props.options[0];
+    let item = slug2item[selected_slug] || null;
     let computed = {};
-    props.attributes.map((attr, idx) => {
-        computed[attr[0]] = item[attr[0]] || 0;
-    });
-    item.calculate_attributes(props.name, get_search_all1(), computed);
+    if (item) {
+        props.attributes.map((attr, idx) => {
+            computed[attr[0]] = item[attr[0]] || 0;
+        });
+        item.calculate_attributes(props.name, get_search_all1(), computed);
+    }
 
     function setSelected(e) {
         let slug = e.target.value;
-        setSelectedSlug(slug);
         update_search1(props.name, slug);
         props.onChange();
     }
 
-    return (
-        <tr key={props.name}>
-            <td>
-                <props.rootselector options={props.options} value={selected_slug} onChange={setSelected}/>
-            </td>
+    let rendered_rows:Array<JSX.Element> = [];
 
-            {props.attributes.map(arr => (
-                <td key={arr[0]}>{beautify(arr[0], computed[arr[0]])}</td>
-            ))}
-        </tr>
+    return (
+        <React.Fragment key={props.name}>
+            <tr key={props.name}>
+
+                <td>
+                    {make_indents(indent)}
+                    <props.rootselector options={props.options} value={selected_slug} onChange={setSelected} required={props.required} />
+                </td>
+
+                {props.attributes.map(arr => (
+                    <td key={arr[0]}>{beautify(arr[0], computed[arr[0]])}</td>
+                ))}
+            </tr>
+            {item && item.slots && Object.keys(item.slots).map(slot_name => {
+                let name = props.name + "." + slot_name;
+                let options = item.slots[slot_name].filter.map((id, idx) => items[id]);
+                let sub_props = Object.assign(
+                    {},
+                    props,
+                    {
+                        name,
+                        options,
+                        rootselector: GenericSelector,
+                        required: item.slots[slot_name].required,
+                    }
+                );
+                return ItemBuildRows(indent+1, sub_props , conflicts);
+            })}
+        </React.Fragment>
     );
 }
 
+function GenericSelector(props:ItemSelectorProps):JSX.Element {
+    return (
+        <select value={props.value} onChange={props.onChange}>
+            {!props.required &&
+                <option value=''>-- none --</option>
+            }
+            {props.options.map((item, idx) =>
+                <option key={item.slug} value={item.slug}>{item.name}</option>
+            )}
+        </select>
+    );
+}
 
 export function beautify(name:string, n:any):string {
     switch (name) {
@@ -125,35 +178,10 @@ function roughPrecision(a:number):number {
     return Math.min(3, ct);
 }
 
-
-/*
-return (
-    <div className='ItemBuilder'>
-        <select className='weapon-select' value={this.state.selected} onChange={this.select}>
-            {weapon_types.map((wt, idx) => (
-                <optgroup key={idx} label={wt.long_name}>
-                    {weapons.filter(item => item.parent.id === wt.id).map((item, idx) => (
-                        <option value={item.slug}>{item.name}</option>
-                    ))}
-                </optgroup>
-            ))}
-        </select>
-
-        <div className='attributes'>
-            {all_attributes.map((attr, idx) => (
-                <div className='calculated-attribute'>
-                    <div className='name'>
-                        {attr[1]}
-                    </div>
-                    <div className='value'>
-                        {beautify(attr[0], computed[attr[0]])}
-                    </div>
-                </div>
-            ))}
-            <div className='firing-modes'>
-                Firing modes: {item['weapFireType'].join(", ")}
-            </div>
-        </div>
-    </div>
-);
-*/
+export function make_indents(indents:number) {
+    let ret = [];
+    for (let i=0; i < indents; ++i) {
+        ret.push(<span className='indent' key={i} />);
+    }
+    return ret;
+}

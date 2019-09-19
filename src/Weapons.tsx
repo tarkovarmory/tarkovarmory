@@ -3,7 +3,7 @@ import { _ } from "translate"; import { Component } from "react";
 import { well_known_ids } from './generated';
 import { Item, ConflictMap, items, caliber_to_type, id2slug, slug2item } from './data';
 import { get_search_all1, get_search1, update_search1 } from './search';
-import { beautify } from './ItemBuilder';
+import { beautify, make_indents } from './ItemBuilder';
 //import { dup } from './util';
 
 
@@ -167,13 +167,6 @@ function tr_slot(slot_name:string):string {
 }
 
 
-function make_indents(indents:number) {
-    let ret = [];
-    for (let i=0; i < indents; ++i) {
-        ret.push(<span className='indent' key={i} />);
-    }
-    return ret;
-}
 
 function render_slots(indent:number, prefix:string, item:Item, conflicts:ConflictMap, rendered_rows:Array<any>):Array<any> {
     if (!item.slots || Object.keys(item.slots).length === 0) {

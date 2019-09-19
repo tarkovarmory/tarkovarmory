@@ -21,6 +21,7 @@ const attributes = [
     ['MaxDurability', 'Max Durability'],
     ['resistance', 'Resistance'],
     ['destructibility', 'Destructibility'],
+    ['bHearDist', 'Hearing Distance'],
     //['min_repair_degradation', 'Min Repair Degradation'],
     //['max_repair_degradation', 'Max Repair Degradation'],
     ['ArmorMaterial', 'Armor Material'],
@@ -32,13 +33,66 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
 
     const [ignored, _forceUpdate] = useReducer(x => x + 1, 0);
 
-    let helmet = armor_by_slug(get_search1('helmet', helmet_list[0].slug));
-    let armor = armor_by_slug(get_search1('armor', armor_list[0].slug));
-    let vest = armor_by_slug(get_search1('vest', vest_list[0].slug));
-
     function forceUpdate() {
         _forceUpdate(0);
     }
+
+    let helmet = armor_by_slug(get_search1('helmet', 'nohelmet'));
+    let armor = armor_by_slug(get_search1('armor', 'noarmor'));
+    let vest = armor_by_slug(get_search1('vest', 'novest'));
+
+    let noarmor = armor_by_slug('noarmor');
+    let novest = armor_by_slug('novest');
+    let nohelmet = armor_by_slug('nohelmet');
+
+    let slot_map = get_search_all1();
+
+    /* Get all armor and attached items. The reverse() is to make sure
+     * sub-items are hit first before the main entity (ie, visor is hit before
+     * helmet, if there is any duplicate coverage area. This is probably not
+     * perfect, sub-item ordering might be different in game, but it should
+     * be a fine result I think. */
+
+    let thorax_armor = [noarmor]
+        .concat(vest.attached_items('vest', slot_map).filter(x => x.armor_zones.thorax).reverse())
+        .concat(armor.attached_items('armor', slot_map).filter(x => x.armor_zones.thorax).reverse());
+    let stomach_armor = [noarmor]
+        .concat(vest.attached_items('vest', slot_map).filter(x => x.armor_zones.stomach).reverse())
+        .concat(armor.attached_items('armor', slot_map).filter(x => x.armor_zones.stomach).reverse());
+    let arms_armor = [noarmor]
+        .concat(vest.attached_items('vest', slot_map).filter(x => x.armor_zones.arms).reverse())
+        .concat(armor.attached_items('armor', slot_map).filter(x => x.armor_zones.arms).reverse());
+    let legs_armor = [noarmor]
+        .concat(vest.attached_items('vest', slot_map).filter(x => x.armor_zones.legs).reverse())
+        .concat(armor.attached_items('armor', slot_map).filter(x => x.armor_zones.legs).reverse());
+
+    let top_armor = [nohelmet]
+        .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.top).reverse())
+    let nape_armor = [nohelmet]
+        .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.nape).reverse())
+    let ears_armor = [nohelmet]
+        .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.ears).reverse())
+    let eyes_armor = [nohelmet]
+        .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.eyes).reverse())
+    let jaws_armor = [nohelmet]
+        .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.jaws).reverse())
+
+
+    /*
+    console.log('-------------------------------------');
+    console.log('thorax', thorax_armor);
+    console.log('stomach', stomach_armor);
+    console.log('arms', arms_armor);
+    console.log('legs', legs_armor);
+
+    console.log('top', thorax_armor);
+    console.log('nape', nape_armor);
+    console.log('ears', ears_armor);
+    console.log('eyes', eyes_armor);
+    console.log('jaws', jaws_armor);
+    console.log('-------------------------------------');
+    */
+
 
     return (
         <div id='Armor'>
@@ -103,8 +157,8 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                                 <th className='tilted'><span><span>Stomach</span></span></th>
                                 <th className='tilted'><span><span>Leg</span></span></th>
                                 <th className='tilted'><span><span>Arm</span></span></th>
-                                <th className='tilted'><span><span>Nape</span></span></th>
                                 <th className='tilted'><span><span>Top</span></span></th>
+                                <th className='tilted'><span><span>Nape</span></span></th>
                                 <th className='tilted'><span><span>Ears</span></span></th>
                                 <th className='tilted'><span><span>Eyes</span></span></th>
                                 <th className='tilted'><span><span>Jaws</span></span></th>
@@ -119,37 +173,15 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                                 //let novest = armor_by_slug('novest');
                                 //let nohelm = armor_by_slug('novest');
 
-                                let thorax_stk = shots_to_kill(ammo, [
-                                    vest.armor_zones.thorax ? vest : noarmor,
-                                    armor.armor_zones.thorax ? armor : noarmor,
-                                ], 80, 0, simulations)
-                                let stomach_stk = shots_to_kill(ammo, [
-                                    vest.armor_zones.stomach ? vest : noarmor,
-                                    armor.armor_zones.stomach ? armor : noarmor,
-                                ], 70, 1.5, simulations)
-                                let arm_stk = shots_to_kill(ammo, [
-                                    vest.armor_zones.arms ? vest : noarmor,
-                                    armor.armor_zones.arms ? armor : noarmor,
-                                ], 60, 0.7, simulations)
-                                let leg_stk = shots_to_kill(ammo, [
-                                    vest.armor_zones.legs ? vest : noarmor,
-                                    armor.armor_zones.legs ? armor : noarmor,
-                                ], 65, 1.0, simulations)
-                                let nape_stk = shots_to_kill(ammo, [
-                                    helmet.armor_zones.nape ? helmet : noarmor,
-                                ], 35, 0, simulations)
-                                let top_stk = shots_to_kill(ammo, [
-                                    helmet.armor_zones.top ? helmet : noarmor,
-                                ], 35, 0, simulations)
-                                let ears_stk = shots_to_kill(ammo, [
-                                    helmet.armor_zones.ears ? helmet : noarmor,
-                                ], 35, 0, simulations)
-                                let eyes_stk = shots_to_kill(ammo, [
-                                    helmet.armor_zones.eyes ? helmet : noarmor,
-                                ], 35, 0, simulations)
-                                let jaws_stk = shots_to_kill(ammo, [
-                                    helmet.armor_zones.jaws ? helmet : noarmor,
-                                ], 35, 0, simulations)
+                                let thorax_stk = shots_to_kill(ammo, thorax_armor, 80, 0, simulations)
+                                let stomach_stk = shots_to_kill(ammo, stomach_armor, 70, 1.5, simulations)
+                                let arm_stk = shots_to_kill(ammo, arms_armor, 60, 0.7, simulations)
+                                let leg_stk = shots_to_kill(ammo, legs_armor, 65, 1.0, simulations)
+                                let top_stk = shots_to_kill(ammo, top_armor, 35, 0, simulations)
+                                let nape_stk = shots_to_kill(ammo, nape_armor, 35, 0, simulations)
+                                let ears_stk = shots_to_kill(ammo, ears_armor, 35, 0, simulations)
+                                let eyes_stk = shots_to_kill(ammo, eyes_armor, 35, 0, simulations)
+                                let jaws_stk = shots_to_kill(ammo, jaws_armor, 35, 0, simulations)
 
 
                                 return (
@@ -158,8 +190,8 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                                         <td>{stomach_stk.avg.toFixed(1)} </td>
                                         <td>{leg_stk.avg.toFixed(1)} </td>
                                         <td>{arm_stk.avg.toFixed(1)} </td>
-                                        <td>{nape_stk.avg.toFixed(1)} </td>
                                         <td>{top_stk.avg.toFixed(1)} </td>
+                                        <td>{nape_stk.avg.toFixed(1)} </td>
                                         <td>{ears_stk.avg.toFixed(1)} </td>
                                         <td>{eyes_stk.avg.toFixed(1)} </td>
                                         <td>{jaws_stk.avg.toFixed(1)} </td>

@@ -109,16 +109,49 @@ export class Item {
                 for (let k in attribute_map) {
                     if (k in sel) {
                         switch(k) {
+                            /* Overwritten attributes */
                             case 'CenterOfImpact':
+                            case 'RecoilForceUp':
+                            case 'RecoilForceBack':
+                            case 'RecoilAngle':
+                            case 'Convergence':
+                            case 'bFirerate':
+                            case 'bHearDist':       /* hearing distance */
+                            case 'ammoCaliber':
                                 attribute_map[k] = sel[k];
                                 break;
 
+                            /* Best of */
                             case 'SightingRange':
+                            case 'bEffDist':      /* effective distance */
                                 attribute_map[k] = Math.max(sel[k], attribute_map[k]);
                                 break;
 
-                            default:
+                            /* Additive */
+                            case 'Weight':
+                            case 'Accuracy':   /* accuracy modifier */
+                            case 'Ergonomics':
+                            case 'Recoil':     /* recoil modifier */
+                            case 'Velocity':   /* velocity modifier */
                                 attribute_map[k] += sel[k];
+                                break;
+
+                            /* No combination */
+                            case 'armorClass':
+                            case 'BluntThroughput':
+                            case 'Durability':
+                            case 'MaxDurability':
+                            case 'resistance':
+                            case 'destructibility':
+                            case 'ArmorMaterial':
+                            case 'armor_zones':
+                            case 'armor_zones_string':
+                                // no action
+                                break;
+
+                            default:
+                                console.error(`Unhandled attribute incalculate_attributes: ${k}`);
+                                attribute_map[k] = 'ERR';
                                 break;
                         }
 
@@ -154,6 +187,35 @@ export class Item {
 
         return conflict_map;
     }
+
+    /** Returns an array of the item along with all attached items **/
+    public attached_items(prefix:string, slot_map:SlotMap):Array<Item> {
+        let ret:Array<Item> = [];
+
+        function get_items(prefix:string, root:Item):void {
+            ret.push(root);
+
+            if (!root.slots || Object.keys(root.slots).length === 0) {
+                return;
+            }
+
+            for (let slot_name in root.slots) {
+                let key = prefix + "." + slot_name;
+                let val = slot_map[key] || (root.slots[slot_name].required ? id2slug[root.slots[slot_name].filter[0]] : "");
+                let sel:Item = val.length > 0 ? slug2item[val] : null;
+
+                if (sel) {
+                    get_items(key, sel);
+                }
+            }
+        }
+
+        get_items(prefix, this);
+
+        return ret;
+    }
+
+
 
     private compute_resistance():number {
         /* This is defined in a lookup table in confg.json, but was a simple calculation */
