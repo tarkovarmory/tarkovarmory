@@ -82,7 +82,6 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
     let jaws_armor = [nohelmet]
         .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.jaws).reverse())
 
-    console.log('thorax', thorax_armor, thorax_armor.map(a => a.custom_durability || 0));
     /*
     console.log('-------------------------------------');
     console.log('thorax', thorax_armor);

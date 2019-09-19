@@ -221,7 +221,6 @@ export class Item {
     public updateCustomDurability(prefix:string, slot_map:SlotMap):void {
         function update(prefix:string, root:Item):void {
             root.custom_durability = parseFloat(slot_map[prefix + '~durability'] || root.MaxDurability.toString());
-            console.log("Durability: ", root.slug, root.custom_durability);
 
             if (!root.slots || Object.keys(root.slots).length === 0) {
                 return;
