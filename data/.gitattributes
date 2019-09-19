@@ -1,0 +1,2 @@
+generated.ts filter=lfs diff=lfs merge=lfs -text
+item-database.json filter=lfs diff=lfs merge=lfs -text
