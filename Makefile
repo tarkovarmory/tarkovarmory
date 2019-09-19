@@ -58,6 +58,7 @@ pack:
 
 parallel-pack: minjs mincss assets
 	cp dist/client.min.js tarkov-armory/static/client.js
+	cp dist/client.min.js.map tarkov-armory/static/
 	cp dist/server.min.js tarkov-armory/server.js
 	cp dist/tarkovarmory.min.css tarkov-armory/static/tarkovarmory.css
 	rm -f tarkov-armory.tar.gz
