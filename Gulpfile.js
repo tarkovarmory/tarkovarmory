@@ -24,24 +24,35 @@ gulp.task('build_styl', build_styl);
 gulp.task('min_styl', min_styl);
 gulp.task('livereload-server', livereload_server);
 gulp.task('background_webpack', background_webpack);
-//gulp.task('background_webpack_server', background_webpack_server);
+gulp.task('background_webpack_server', background_webpack_server);
+gulp.task('background_runserver', background_runserver);
 //gulp.task('watch_tslint', watch_tslint);
 //gulp.task('tslint', lint);
 gulp.task('default', 
     gulp.parallel(
         "livereload-server", 
         "background_webpack", 
-        //"background_webpack_server",  /* done by a different tmux window now */
+        "background_webpack_server",
         "build_styl", 
         "watch_styl", 
         "watch_dist_js", 
-        //"watch_tslint"
+        "background_runserver", 
+    )
+);
+
+gulp.task('noserver', 
+    gulp.parallel(
+        "livereload-server", 
+        "background_webpack", 
+        "build_styl", 
+        "watch_styl", 
+        "watch_dist_js", 
     )
 );
 
 
 function reload(done) {
-    setTimeout(livereload.reload, 0.5);
+    setTimeout(livereload.reload, 1.5);
     //livereload.reload();
     done();
 }
@@ -161,7 +172,6 @@ function background_webpack(done) {
     done()
 }
 
-/*
 function background_webpack_server(done) {
     function spawn_webpack() {
         let env = process.env;
@@ -175,4 +185,16 @@ function background_webpack_server(done) {
 
     done()
 }
-*/
+function background_runserver(done) {
+    function spawn_webpack() {
+        let env = process.env;
+        let webpack = spawn('node', ['node_modules/supervisor/lib/cli-wrapper.js', '--poll-interval', '500', '--watch', 'dist/server.js', 'dist/server.js'])
+
+        webpack.stdout.on('data', o => process.stdout.write(o))
+        webpack.stderr.on('data', o => process.stderr.write(o))
+        webpack.on('exit', spawn_webpack);
+    }
+    spawn_webpack();
+
+    done()
+}

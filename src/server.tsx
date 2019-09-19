@@ -39,8 +39,8 @@ if (production) {
     css = fs.readFileSync(path.resolve("./static") + "/tarkovarmory.css");
     css = "<style>" + css + "</style>";
 } else {
-    server.use("/static", express.static(path.resolve("../assets")));
-    server.use("/static", express.static(path.resolve("../dist")));
+    server.use("/static", express.static(path.resolve("./assets")));
+    server.use("/static", express.static(path.resolve("./dist")));
 }
 
 server.get("*", (req, res) => {

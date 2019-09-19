@@ -1,9 +1,12 @@
 {
   "name": "tarkov-armory",
-  "version": "0.0.0",
-  "preferGlobal": true,
+  "version": "1.0.0",
+  "url": "https://github.com/tarkovarmory/tarkovarmory",
   "private": true,
-  "license": "Proprietary",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "dev": "gulp"
+  },
   "email": "",
   "files": [
     "pack"

@@ -18,7 +18,7 @@ tmux: node_modules
 #	NODE_PATH=$(NODE_PATH) PATH=$(PATH) PRODUCTION=true webpack --devtool=source-map --config webpack-server.config.js
 
 client: #src/precomputed.ts
-	NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp --
+	NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp -- noserver
 
 server: #src/precomputed.ts
 	#NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp --
@@ -26,7 +26,7 @@ server: #src/precomputed.ts
 
 runserver:
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) webpack --colors --config webpack-server.config.js
-	cd dist/; NODE_PATH=../$(NODE_PATH) PATH=../$(PATH) supervisor -w server.js -- --expose_gc server.js
+	npm run server
 
 node_modules:
 	npm install
