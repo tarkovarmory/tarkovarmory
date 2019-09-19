@@ -18,7 +18,7 @@ export function set_shots_to_kill_cache(_cache:any):void {
 }
 
 
-export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number=80, blowthrough_rate:number = 0.0, simulations:number=250):ShotsToKill {
+export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, _armor_durabilities:Array<number> = null, health:number=80, blowthrough_rate:number = 0.0, simulations:number=250):ShotsToKill {
     if (armor_list.length === 0 || !armor_list[0]) {
         return {
             min: -1,
@@ -29,9 +29,12 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number
 
     //let cache_key = `${bullet.id}.${armor.id}.${simulations}`;
 
+    let armor_durabilities = _armor_durabilities ? _armor_durabilities.map(x => x || 0) : armor_list.map(armor => armor.Durability);
     let cache_key = `${bullet.id}.${health}.${blowthrough_rate}`;
-    for (let armor of armor_list) {
-        cache_key += `.${armor.id}@${armor.Durability}`;
+    for (let armor_idx = 0; armor_idx < armor_list.length; ++armor_idx) {
+        let armor = armor_list[armor_idx];
+        let durability = armor_durabilities[armor_idx];
+        cache_key += `.${armor.id}@${durability}`;
     }
     if (cache_key in cache) {
         return {
@@ -48,7 +51,7 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number
     };
 
     for (let i = 0; i < simulations; ++i) {
-        let ct = _shots_to_kill(bullet, armor_list, health, blowthrough_rate);
+        let ct = _shots_to_kill(bullet, armor_list, armor_durabilities, health, blowthrough_rate);
         ret.min = Math.min(ret.min, ct);
         ret.max = Math.max(ret.max, ct);
         ret.avg += ct;
@@ -65,11 +68,12 @@ export function shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number
     return ret;
 }
 
-function _shots_to_kill(bullet:Ammo, armor_list:Array<Item>, health:number, blowthrough_rate:number):number {
+function _shots_to_kill(bullet:Ammo, armor_list:Array<Item>, _armor_durabilities:Array<number>, health:number, blowthrough_rate:number):number {
     let head_health = 35;
 
     let shot_count = 0;
-    let armor_durabilities = armor_list.map(armor => armor.Durability);
+    let armor_durabilities = _armor_durabilities.map(x => x);
+
     for (let i = 0; i < 400; ++i) {
         shot_count += 1;
 

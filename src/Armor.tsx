@@ -41,11 +41,16 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
     let armor = armor_by_slug(get_search1('armor', 'noarmor'));
     let vest = armor_by_slug(get_search1('vest', 'novest'));
 
+    let nohelmet = armor_by_slug('nohelmet');
     let noarmor = armor_by_slug('noarmor');
     let novest = armor_by_slug('novest');
-    let nohelmet = armor_by_slug('nohelmet');
 
     let slot_map = get_search_all1();
+
+
+    helmet.updateCustomDurability('helmet', slot_map);
+    armor.updateCustomDurability('armor', slot_map);
+    vest.updateCustomDurability('vest', slot_map);
 
     /* Get all armor and attached items. The reverse() is to make sure
      * sub-items are hit first before the main entity (ie, visor is hit before
@@ -77,7 +82,7 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
     let jaws_armor = [nohelmet]
         .concat(helmet.attached_items('helmet', slot_map).filter(x => x.armor_zones.jaws).reverse())
 
-
+    console.log('thorax', thorax_armor, thorax_armor.map(a => a.custom_durability || 0));
     /*
     console.log('-------------------------------------');
     console.log('thorax', thorax_armor);
@@ -104,7 +109,8 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                         header={'Helmet'}
                         addClass={'armor-builder'}
                         attributes={attributes}
-                        rootselector={ArmorSelect}
+                        rootSelector={ArmorSelect}
+                        modifiableDurability={true}
                         onChange={forceUpdate}
                     />
                 </div>
@@ -113,7 +119,8 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                         header={'Armor'}
                         addClass={'armor-builder'}
                         attributes={attributes}
-                        rootselector={ArmorSelect}
+                        rootSelector={ArmorSelect}
+                        modifiableDurability={true}
                         onChange={forceUpdate}
                     />
                 </div>
@@ -122,7 +129,8 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                         header={'Vest'}
                         addClass={'armor-builder'}
                         attributes={attributes}
-                        rootselector={ArmorSelect}
+                        rootSelector={ArmorSelect}
+                        modifiableDurability={true}
                         onChange={forceUpdate}
                     />
                 </div>
@@ -173,23 +181,22 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                                 //let novest = armor_by_slug('novest');
                                 //let nohelm = armor_by_slug('novest');
 
-                                let thorax_stk = shots_to_kill(ammo, thorax_armor, 80, 0, simulations)
-                                let stomach_stk = shots_to_kill(ammo, stomach_armor, 70, 1.5, simulations)
-                                let arm_stk = shots_to_kill(ammo, arms_armor, 60, 0.7, simulations)
-                                let leg_stk = shots_to_kill(ammo, legs_armor, 65, 1.0, simulations)
-                                let top_stk = shots_to_kill(ammo, top_armor, 35, 0, simulations)
-                                let nape_stk = shots_to_kill(ammo, nape_armor, 35, 0, simulations)
-                                let ears_stk = shots_to_kill(ammo, ears_armor, 35, 0, simulations)
-                                let eyes_stk = shots_to_kill(ammo, eyes_armor, 35, 0, simulations)
-                                let jaws_stk = shots_to_kill(ammo, jaws_armor, 35, 0, simulations)
-
+                                let thorax_stk  = shots_to_kill(ammo, thorax_armor, thorax_armor.map(a => a.custom_durability || 0), 80, 0, simulations)
+                                let stomach_stk = shots_to_kill(ammo, stomach_armor, stomach_armor.map(a => a.custom_durability || 0), 70, 1.5, simulations)
+                                let arms_stk     = shots_to_kill(ammo, arms_armor, arms_armor.map(a => a.custom_durability || 0), 60, 0.7, simulations)
+                                let legs_stk     = shots_to_kill(ammo, legs_armor, legs_armor.map(a => a.custom_durability || 0), 65, 1.0, simulations)
+                                let top_stk     = shots_to_kill(ammo, top_armor, top_armor.map(a => a.custom_durability || 0), 35, 0, simulations)
+                                let nape_stk    = shots_to_kill(ammo, nape_armor, nape_armor.map(a => a.custom_durability || 0), 35, 0, simulations)
+                                let ears_stk    = shots_to_kill(ammo, ears_armor, ears_armor.map(a => a.custom_durability || 0), 35, 0, simulations)
+                                let eyes_stk    = shots_to_kill(ammo, eyes_armor, eyes_armor.map(a => a.custom_durability || 0), 35, 0, simulations)
+                                let jaws_stk    = shots_to_kill(ammo, jaws_armor, jaws_armor.map(a => a.custom_durability || 0), 35, 0, simulations)
 
                                 return (
                                     <tr key={ammo.slug}>
                                         <td>{thorax_stk.avg.toFixed(1)} </td>
                                         <td>{stomach_stk.avg.toFixed(1)} </td>
-                                        <td>{leg_stk.avg.toFixed(1)} </td>
-                                        <td>{arm_stk.avg.toFixed(1)} </td>
+                                        <td>{legs_stk.avg.toFixed(1)} </td>
+                                        <td>{arms_stk.avg.toFixed(1)} </td>
                                         <td>{top_stk.avg.toFixed(1)} </td>
                                         <td>{nape_stk.avg.toFixed(1)} </td>
                                         <td>{ears_stk.avg.toFixed(1)} </td>

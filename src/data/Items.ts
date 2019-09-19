@@ -26,6 +26,8 @@ export class Item {
 
     match:boolean; /* used for searching */
 
+    custom_durability:number; /* used when entering durabilty manually. This is updated by updateCustomDurability */
+
     /* these fields come directly from the item-database.json, complete with inconsistent casing. */
     readonly armorClass:number;
     readonly BluntThroughput:number;
@@ -215,6 +217,29 @@ export class Item {
         return ret;
     }
 
+    /** Recursively updates custom_durability **/
+    public updateCustomDurability(prefix:string, slot_map:SlotMap):void {
+        function update(prefix:string, root:Item):void {
+            root.custom_durability = parseFloat(slot_map[prefix + '~durability'] || root.MaxDurability.toString());
+            console.log("Durability: ", root.slug, root.custom_durability);
+
+            if (!root.slots || Object.keys(root.slots).length === 0) {
+                return;
+            }
+
+            for (let slot_name in root.slots) {
+                let key = prefix + "." + slot_name;
+                let val = slot_map[key] || (root.slots[slot_name].required ? id2slug[root.slots[slot_name].filter[0]] : "");
+                let sel:Item = val.length > 0 ? slug2item[val] : null;
+
+                if (sel) {
+                    update(key, sel);
+                }
+            }
+        }
+
+        update(prefix, this);
+    }
 
 
     private compute_resistance():number {

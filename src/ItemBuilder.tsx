@@ -19,8 +19,9 @@ interface ItemBuilderProps {
     'addClass': string;
     'options': Array<Item>;
     'attributes': Array<Array<string>>;
-    'rootselector': (props:ItemSelectorProps)=>JSX.Element;
+    'rootSelector': (props:ItemSelectorProps)=>JSX.Element;
     'onChange': () => void;
+    'modifiableDurability'?: boolean;
     'required'?: boolean;
 }
 
@@ -82,12 +83,21 @@ function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:Conflict
 
                 <td>
                     {make_indents(indent)}
-                    <props.rootselector options={props.options} value={selected_slug} onChange={setSelected} required={props.required} />
+                    <props.rootSelector options={props.options} value={selected_slug} onChange={setSelected} required={props.required} />
                 </td>
 
-                {props.attributes.map(arr => (
-                    <td key={arr[0]}>{beautify(arr[0], computed[arr[0]])}</td>
-                ))}
+                {props.attributes.map(arr => {
+                    if (arr[0] === 'Durability' && props.modifiableDurability) {
+                        return (
+                            <td key={arr[0]}>
+                                {DurabilityInput(props.name, parseFloat(computed[arr[0]]))}
+                            </td>
+                        );
+                    }
+                    else {
+                        return (<td key={arr[0]}>{beautify(arr[0], computed[arr[0]])}</td>)
+                    }
+                })}
             </tr>
             {item && item.slots && Object.keys(item.slots).map(slot_name => {
                 let name = props.name + "." + slot_name;
@@ -98,13 +108,38 @@ function ItemBuildRows(indent:number, props:ItemBuilderProps, conflicts:Conflict
                     {
                         name,
                         options,
-                        rootselector: GenericSelector,
+                        rootSelector: GenericSelector,
                         required: item.slots[slot_name].required,
                     }
                 );
                 return ItemBuildRows(indent+1, sub_props , conflicts);
             })}
         </React.Fragment>
+    );
+}
+
+function DurabilityInput(name:string, default_value:number) {
+    if (isNaN(default_value)) {
+        default_value = 0;
+    }
+    let v = get_search1(name + '~durability', default_value.toString());
+
+    function onChange(e) {
+        let new_v = parseFloat(e.target.value);
+        if (!isNaN(new_v)) {
+            update_search1(name + '~durability', new_v.toString());
+        } else {
+            update_search1(name + '~durability', e.target.value);
+        }
+    }
+
+    return (
+        <input
+            className='durability-input'
+            placeholder={default_value.toString()}
+            value={v}
+            onChange={onChange}
+        />
     );
 }
 
