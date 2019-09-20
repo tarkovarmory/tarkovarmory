@@ -2,9 +2,9 @@
 VERSION=$(shell ./eft_version.py)
 RESOURCES=$(shell ./resources_path.py)
 
-all: dirs generated.ts 
+all: dirs ../src/generated.ts 
 	
-generated.ts: item-database.json latest/item-database.json latest/en.json latest/ru.json latest/de.json ./build_ts_files.py
+../src/generated.ts: item-database.json latest/item-database.json latest/en.json latest/ru.json latest/de.json ./build_ts_files.py
 	./build_ts_files.py
 
 latest/item-database.json: $(RESOURCES) ./extract_from_resources.py

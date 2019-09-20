@@ -201,7 +201,7 @@ print("Categories: %d" % len(nodes))
 print("Items: %d" % len(items))
 print("Well known ids: %s" % json.dumps(well_known_ids, indent=4))
 
-with open('generated.ts', 'w') as out:
+with open('../src/generated.ts', 'w') as out:
     out.write('export const eft_version = \"%s\";\n' % eft_version())
     out.write('export const well_known_ids = %s;\n' % json.dumps(well_known_ids, indent=4))
     #out.write('export const nodes = %s;\n' % json.dumps(nodes, indent=4))
