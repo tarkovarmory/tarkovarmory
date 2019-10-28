@@ -5,7 +5,7 @@ tmux: node_modules
 	tmux new-session -d -s tarkov 'exec make client'
 	tmux rename-window 'Tarkov Armory'
 	tmux split-window -v 'exec make server'
-	tmux split-window -v 'exec make runserver'
+	tmux split-window -v 'exec make devserver'
 	tmux -2 attach-session -t tarkov
 
 #precompute: src/precomputed.ts
@@ -24,9 +24,9 @@ server: #src/precomputed.ts
 	#NODE_PATH=$(NODE_PATH) PATH=$(PATH) supervisor -w Gulpfile.js,webpack.config.js,tsconfig.json supervisor -w Gulpfile.js -x gulp --
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) webpack --watch --progress --colors --config webpack-server.config.js
 
-runserver:
+dev devserver:
 	NODE_PATH=$(NODE_PATH) PATH=$(PATH) webpack --colors --config webpack-server.config.js
-	npm run server
+	npm run dev
 
 node_modules:
 	npm install

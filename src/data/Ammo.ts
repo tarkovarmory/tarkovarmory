@@ -18,10 +18,21 @@ export interface AmmoCaliberInterface {
     "762x54"   : string ;
     "46x30"    : string ;
     "40mm"     : string ;
+    "127x108"  : string ;
+    "127x55"   : string ;
+    "26x75"    : string ;
+    "30x29"    : string ;
+    "57x28"    : string ;
     "shrapnel" : string ;
 }
 export type AmmoCaliber = keyof AmmoCaliberInterface;
-export const AmmoCaliberValues = ["12x70", "20x70",  "9x18", "9x19", "762x25", "9x21", "366", "9x39", "545x39", "556x45", "762x39", "762x51", "762x54", "46x30"/*, "40mm"*/].sort();
+export const AmmoCaliberValues:Array<AmmoCaliber> = ["12x70", "20x70",  "9x18",
+    "9x19", "762x25", "9x21", "366", "9x39", "545x39", "556x45", "762x39",
+    "762x51", "762x54", "46x30", "127x108", "127x55", "30x29",
+    "57x28",
+    // "26x75",  /* this didn't have any damage / penetration, so not ready yet I guess */
+/*, "40mm"*/];
+AmmoCaliberValues.sort()
 
 export let ammo_list:Array<Ammo> = [];
 
@@ -123,13 +134,13 @@ for (let id in items) {
     let item = items[id] as any;
     if (item.parent_id === well_known_ids['ammo']) {
 
-        if (caliber_to_type(item.Caliber, item.slug) == "40mm") {
-            /* These aren't in use yet */
+        if (caliber_to_type(item.Caliber, item.slug) === "shrapnel") {
+            /* Grenade shrapnel is listed in here, but I don't think it's particularly useful to include it in the normal ammo */
             continue;
         }
 
-        if (caliber_to_type(item.Caliber, item.slug) == "shrapnel") {
-            /* Grenade shrapnel is listed in here, but I don't think it's particularly useful to include it in the normal ammo */
+        if (AmmoCaliberValues.indexOf(caliber_to_type(item.Caliber, item.slug)) < 0) {
+            // not included in the master list? shouldn't be here then
             continue;
         }
 
@@ -199,6 +210,16 @@ export function caliber_to_type(caliber, slug):AmmoCaliber {
             return "9x21";
         case "Caliber9x39":
             return "9x39";
+        case "Caliber127x108":
+            return "127x108";
+        case "Caliber127x55":
+            return "127x55";
+        case "Caliber26x75":
+            return "26x75";
+        case "Caliber30x29":
+            return "30x29";
+        case "Caliber57x28":
+            return "57x28";
     }
     throw new Error("Error converting caliber: " + caliber);
 }
