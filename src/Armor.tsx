@@ -13,6 +13,9 @@ import { get_search, update_search } from './search';
 import { shots_to_kill } from './simulations';
 
 
+const DEFAULT_HELMET = 'helmet';
+const DEFAULT_ARMOR = 'item_equipment_armor_iotv';
+const DEFAULT_VEST = 'item_equipment_rig_tv110';
 
 const attributes = [
     ['armorClass', 'Armor Class'],
@@ -37,9 +40,9 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
         _forceUpdate(0);
     }
 
-    let helmet = armor_by_slug(get_search1('helmet', 'helmet')); /* helmet == kiver */
-    let armor = armor_by_slug(get_search1('armor', 'item-equipment-armor-iotv'));
-    let vest = armor_by_slug(get_search1('vest', 'item-equipment-rig-carriertactec'));
+    let helmet = armor_by_slug(get_search1('helmet', DEFAULT_HELMET)); /* helmet == kiver */
+    let armor = armor_by_slug(get_search1('armor', DEFAULT_ARMOR));
+    let vest = armor_by_slug(get_search1('vest', DEFAULT_VEST));
 
     let nohelmet = armor_by_slug('nohelmet');
     let noarmor = armor_by_slug('noarmor');
@@ -104,7 +107,7 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                 <div id='builders'>
                     <div>
                         <ItemBuilder name='helmet' options={helmet_list}
-                            defaultSlug='helmet'
+                            defaultSlug={DEFAULT_ARMOR}
                             header={'Helmet'}
                             addClass={'armor-builder'}
                             attributes={attributes}
@@ -115,7 +118,7 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                     </div>
                     <div>
                         <ItemBuilder name='armor' options={armor_list}
-                            defaultSlug='item-equipment-armor-iotv'
+                            defaultSlug={DEFAULT_ARMOR}
                             header={'Armor'}
                             addClass={'armor-builder'}
                             attributes={attributes}
@@ -126,7 +129,7 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
                     </div>
                     <div>
                         <ItemBuilder name='vest' options={vest_list}
-                            defaultSlug='item-equipment-rig-carriertactec'
+                            defaultSlug={DEFAULT_VEST}
                             header={'Vest'}
                             addClass={'armor-builder'}
                             attributes={attributes}
