@@ -37,7 +37,7 @@ export function ArmorAnalyzer(props:{}):JSX.Element {
     const [ignored, _forceUpdate] = useReducer(x => x + 1, 0);
 
     function forceUpdate() {
-        _forceUpdate(0);
+        _forceUpdate();
     }
 
     let helmet = armor_by_slug(get_search1('helmet', DEFAULT_HELMET)); /* helmet == kiver */
