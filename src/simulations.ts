@@ -99,8 +99,8 @@ function _shots_to_kill(bullet:Ammo, armor_list:Array<Item>, _armor_durabilities
         }
     }
 
-    throw new Error("Shots to kill simulation failed to terminate");
-    return 400;
+    //throw new Error("Shots to kill simulation failed to terminate");
+    return Infinity;
 }
 
 /*

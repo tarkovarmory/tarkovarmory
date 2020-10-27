@@ -54,7 +54,7 @@ export class Ammunition extends Component<{}, any> {
 
         this.state = {
             "calibers_selected": getMultiSelectValue("calibers"),
-            "armor_selected": get_search("armor_selected", ["notHeavy", "item_equipment_armor_iotv_1", "item_equipment_armor_zhuk6a"]),
+            "armor_selected": get_search("armor_selected", ["notheavy", "item_equipment_armor_iotv_1", "item_equipment_armor_zhuk6a"]),
             "selected": "",
             "sort": get_search("sort", ["caliber"])[0],
         }

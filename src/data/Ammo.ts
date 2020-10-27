@@ -23,6 +23,7 @@ export interface AmmoCaliberInterface {
     "26x75"    : string ;
     "30x29"    : string ;
     "57x28"    : string ;
+    "40x46"    : string ;
     "1143x23"  : string ;
     "shrapnel" : string ;
 }
@@ -30,7 +31,7 @@ export type AmmoCaliber = keyof AmmoCaliberInterface;
 export const AmmoCaliberValues:Array<AmmoCaliber> = ["12x70", "20x70",  "9x18",
     "9x19", "762x25", "9x21", "366", "9x39", "545x39", "556x45", "762x39",
     "762x51", "762x54", "46x30", "127x108", "127x55", "30x29",
-    "57x28", "1143x23",
+    "57x28", "40x46", "1143x23",
     // "26x75",  /* this didn't have any damage / penetration, so not ready yet I guess */
 /*, "40mm"*/];
 AmmoCaliberValues.sort()
@@ -145,6 +146,11 @@ for (let id in items) {
             continue;
         }
 
+        if (item.Damage <= 0) {
+            console.log("Ammo type ", item.slug, " had damage: ", item.Damage);
+            continue;
+        }
+
         //console.log(item);
         ammo_list.push(
             new Ammo({
@@ -221,6 +227,8 @@ export function caliber_to_type(caliber, slug):AmmoCaliber {
             return "30x29";
         case "Caliber57x28":
             return "57x28";
+        case "Caliber40x46":
+            return "40x46";
         case "Caliber1143x23ACP":
             return "1143x23";
     }
