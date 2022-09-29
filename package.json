@@ -37,7 +37,7 @@
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.0.1",
     "react-select": "^2.4.4",
-    "recharts": "^1.7.0",
+    "recharts": "^2.1.14",
     "stylus": "^0.54.5",
     "supervisor": "^0.12.0",
     "ts-loader": "^5.4.5",
